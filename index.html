@@ -1,0 +1,55 @@
+<!doctype html>
+<html>
+
+<head>    
+    <title>Maze Puzzle</title>
+
+    <link rel="stylesheet" href="./style.css"/>
+    <link rel="stylesheet" href="https://cdn.linearicons.com/free/1.0.0/icon-font.min.css">
+</head>
+
+<body>
+    <div id="board"></div>
+    
+    <div id="controls">
+        <div class="logo">
+            <span>Maze</span><span>Puzzle</span>
+        </div>
+        <div style="position: absolute;width: 100%;text-align: center;">
+            <button type="button" onClick="solve()"><span class="lnr lnr-dice"></span>Solve</button>
+            <button type="button" onClick="initGame()" id="shuffle"><span class="lnr lnr-sync"></span>Shuffle</button>
+            <select id="size">
+                <option value="10" selected>10x10</option>
+                <option value="15">15x15</option>
+                <option value="20">20x20</option>
+                <option value="30">30x30</option>
+                <option value="40">40x40</option>
+                <option value="50">50x50</option>
+            </select>
+        </div>
+        
+        <div class="github">
+            <a class="github-button" href="https://github.com/naumanumer/maze" data-icon="octicon-star" data-size="large" data-show-count="true"
+            aria-label="Star naumanumer/sudoku on GitHub">Star</a>
+            
+            <a class="github-button" href="https://github.com/naumanumer/maze/fork" data-icon="octicon-repo-forked" data-size="large"
+            aria-label="Fork naumanumer/sudoku on GitHub">Fork</a>
+            
+            <a class="github-button" href="https://github.com/naumanumer/maze/issues" data-icon="octicon-issue-opened" data-size="large"
+            aria-label="Issue naumanumer/sudoku on GitHub">Issue</a>
+        </div>
+    </div>
+    <div id="console">
+        <button id="clear" title="Clear logs" onClick="clearConsole()">x</button>
+    </div>
+    
+    <script src="./jquery.min.js"></script>
+    <script src="./console.js"></script>
+    <script src="./puzzle genrator.js"></script>
+    <script src="./player.js"></script>
+    <script src="./layout.js"></script>
+    <script src="./solution.js"></script>
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+</body>
+
+</html>
