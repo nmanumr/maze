@@ -1,3 +1,10 @@
+/** Maze - player.js
+ * Implmentation of Player in Maze
+ *
+ * (c) 2016, 2017 Nauman Umer
+ * This file is released under the MIT License.
+ */
+
 var player;
 document.onkeydown = function(e){
     move(e.keyCode)
@@ -13,8 +20,8 @@ keyCodes = {
 function initPlayer() {
     player = $('#player');
     var half = Math.floor(TileSize/2)
-    var size = TileSize - half;
-    player.height(size).width(size);
+    var n = TileSize - half;
+    player.height(n).width(n);
     player.css("margin", half/2+"px");
 
     writeOnConsole("Initialized Player")

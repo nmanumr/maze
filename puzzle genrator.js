@@ -1,3 +1,11 @@
+/** Maze - puzzle generator.js
+ * Maze Genretion Algorithm
+ *
+ * (c) 2016, 2017 Nauman Umer
+ * This file is released under the MIT License.
+ */
+
+
 /**
  * Generate maze using Recursive backtracker Algorithm
  */

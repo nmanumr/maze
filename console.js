@@ -5,12 +5,12 @@ function writeOnConsole(text, color) {
 
     var d = $('#console');
     // writing a line to console
-    d.html(d.html()+`<pre style="color: ${color}">${text}</pre>`);
+    d.html(d.html() + `<pre style="color: ${color}">${text}</pre>`);
     // scrolling console to end
     d.scrollTop(d.prop("scrollHeight"));
 }
 
 /** Clear everything from console */
-function clearConsole(){
+function clearConsole() {
     $('#console').html("");
 }
