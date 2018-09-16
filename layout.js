@@ -20,7 +20,7 @@ function initGame() {
     var boardHtml = '<div id="player"></div>';
 
     //itrate over each cell of game board
-    var n = 0,k = 0;
+    var k = 0;
     for (var i = 0; i < n; i++) {
         for (var j = 0; j < n; j++) {
 
@@ -30,7 +30,6 @@ function initGame() {
 
             // push cell to cells array
             cells.push(`#${j}-${i}`);
-            n++;
         }
     }
 
