@@ -1,0 +1,30 @@
+{
+  "name": "maze",
+  "version": "1.0.0",
+  "description": "",
+  "main": "console.js",
+  "scripts": {
+    "build": "rollup --config",
+    "watch": "rollup --config --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nmanumr/maze.git"
+  },
+  "keywords": [],
+  "author": "nmanumr",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nmanumr/maze/issues"
+  },
+  "homepage": "https://github.com/nmanumr/maze#readme",
+  "devDependencies": {
+    "rollup": "^2.41.2",
+    "rollup-plugin-typescript2": "^0.30.0",
+    "tslib": "^2.1.0",
+    "typescript": "^4.2.3"
+  },
+  "dependencies": {
+    "preact": "^10.5.12"
+  }
+}
