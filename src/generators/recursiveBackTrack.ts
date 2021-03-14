@@ -1,4 +1,4 @@
-import {Board, Cell, RectangularDirection} from '../core';
+import {Board, Cell, RectangularDirection} from '../board';
 import {IGenerator} from "./types";
 
 /**

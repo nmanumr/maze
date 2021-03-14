@@ -1,4 +1,4 @@
-import {Board} from "../core";
+import {Board} from "../board";
 
 export interface IGenerator {
   generate(board: Board): Board;

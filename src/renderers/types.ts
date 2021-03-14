@@ -1,4 +1,4 @@
-import {Board} from "../core";
+import {Board} from "../board";
 
 export interface IRenderer {
   render(board: Board): HTMLElement;

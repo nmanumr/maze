@@ -1,4 +1,4 @@
-import {Board} from "./core";
+import {Board} from "./board";
 import generatorsManager, {Generators} from './generators';
 import renderersManager, {Renderers} from "./renderers";
 

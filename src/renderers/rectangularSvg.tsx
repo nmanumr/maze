@@ -1,6 +1,6 @@
 import {h} from "../utils";
 import {IRenderer} from "./types";
-import {Board, Cell, ISize, RectangularDirection} from "../core";
+import {Board, Cell, ISize, RectangularDirection} from "../board";
 
 export default class RectangularSvg implements IRenderer {
   private cellSize = 30;
