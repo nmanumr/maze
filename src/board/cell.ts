@@ -1,4 +1,4 @@
-import {Point} from "./point";
+import {Point} from "../utils";
 
 export const enum RectangularDirection {
   LEFT = 'l',

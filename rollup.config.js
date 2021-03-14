@@ -1,15 +1,17 @@
 import typescript from 'rollup-plugin-typescript2';
+import {nodeResolve} from '@rollup/plugin-node-resolve';
 
 export default {
   input: './src/main.ts',
   plugins: [
+    nodeResolve(),
     typescript()
   ],
   output: [
     {
       dir: "public/script/",
       format: "es",
-      chunkFileNames: '[name]-[hash].[format].js',
+      chunkFileNames: '[name].[format].js',
       entryFileNames: '[name].[format].js',
       sourcemap: true,
     }

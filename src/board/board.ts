@@ -1,5 +1,5 @@
 import {Cell, OpposingRectangularDirection, RectangularDirection} from './cell';
-import {Point} from "./point";
+import {Point} from "../utils";
 
 export interface ISize {
   readonly height: number;
