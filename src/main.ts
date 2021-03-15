@@ -43,8 +43,8 @@ const game$ = merge(
 
 fromEvent(document, 'DOMContentLoaded').subscribe(() => {
   newBoard({
-    height: 18,
-    width: 32,
+    height: 20,
+    width: 20,
     generator: Generators.recursiveBackTrack,
   });
 
