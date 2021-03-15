@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    --cell-size: 0;
+}
+
+#player {
+    transition: all .15s ease;
+}
+
+.maze-wall {
+    stroke-dasharray: var(--cell-size);
+    stroke-dashoffset: 0;
+    animation: maze-wall .5s;
+}
+
+@keyframes maze-wall {
+    from {
+        stroke-dashoffset: var(--cell-size);
+    }
+    to {
+        stroke-dashoffset: 0;
+    }
+}
