@@ -1,12 +1,13 @@
-import {animationFrameScheduler, BehaviorSubject, Observable} from "rxjs";
+import {animationFrameScheduler, BehaviorSubject, merge, Observable} from "rxjs";
 import {IPosition} from "../utils";
-import {Keyboard} from "../$browser/keyboard";
-import {distinctUntilChanged, observeOn, tap, withLatestFrom} from "rxjs/operators";
+import {Keyboard, Swipe} from "../$browser";
+import {distinctUntilChanged, map, observeOn, tap, withLatestFrom} from "rxjs/operators";
 import {Board, RectangularDirection} from "../board";
 
 export interface MountOptions {
   keyboard$: Observable<Keyboard>;
-  board$: Observable<Board>
+  board$: Observable<Board>;
+  swipe$: Observable<Swipe>;
 }
 
 export interface Player {
@@ -14,15 +15,19 @@ export interface Player {
   position: IPosition;
 }
 
+interface Control {
+  dir: RectangularDirection
+}
+
 const keyMap = {
   'ArrowRight': RectangularDirection.RIGHT,
   'ArrowLeft': RectangularDirection.LEFT,
-  'ArrowUp': RectangularDirection.TOP,
-  'ArrowDown': RectangularDirection.BOTTOM,
+  'ArrowUp': RectangularDirection.UP,
+  'ArrowDown': RectangularDirection.DOWN,
 }
 
 export function mountPlayer(
-  {keyboard$, board$}: MountOptions
+  {keyboard$, swipe$, board$}: MountOptions
 ): Observable<Player> {
   const player$ = new BehaviorSubject<Player>({
     visible: true,
@@ -42,32 +47,42 @@ export function mountPlayer(
       })
     ).subscribe()
 
-  keyboard$
+  const control$: Observable<Control> = merge(
+    keyboard$,
+    swipe$,
+  ).pipe(
+    map((dir) => {
+      if ((dir as Keyboard).type) {
+        // @ts-ignore
+        return {dir: keyMap[dir.type]}
+      }
+      return dir as Swipe;
+    })
+  )
+
+  control$
     .pipe(
       withLatestFrom(player$, board$),
-      tap(([{type}, player, board]) => {
+      tap(([{dir}, player, board]) => {
         let assistedPlayer = true;
         let {x, y} = player.position;
-
-        // @ts-ignore
-        if (board.hasWall({x, y}, keyMap[type])) {
+        if (board.hasWall({x, y}, dir)) {
           return;
         }
 
         do {
-          if (type === 'ArrowRight' && x < (board.size.width - 1)) {
+          if (dir === 'right' && x < (board.size.width - 1)) {
             x++;
-          } else if (type === 'ArrowLeft' && x > 0) {
+          } else if (dir === 'left' && x > 0) {
             x--;
-          } else if (type === 'ArrowUp' && y > 0) {
+          } else if (dir === 'up' && y > 0) {
             y--;
-          } else if (type === 'ArrowDown' && y < (board.size.height - 1)) {
+          } else if (dir === 'down' && y < (board.size.height - 1)) {
             y++;
           }
 
           const visitable = board.getNeighbourCells({x, y}, true);
-          // @ts-ignore
-          if (!visitable.has(keyMap[type]) || visitable.size > 2) {
+          if (!visitable.has(dir) || visitable.size > 2) {
             break;
           }
         } while (assistedPlayer);

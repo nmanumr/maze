@@ -54,7 +54,7 @@ export default class RectangularSvg implements IRenderer {
     const pivotY = cell.position.y * this.cellSize + (this.lineWidth / 2);
     let path = '';
 
-    if (cell.hasWall(RectangularDirection.TOP)) {
+    if (cell.hasWall(RectangularDirection.UP)) {
       // Top wall
       path += `M${pivotX},${pivotY}H${pivotX + this.cellSize}`;
     }

@@ -6,9 +6,14 @@ import {animationFrameScheduler, fromEvent, merge} from "rxjs";
 import {mountBoard, newBoard, resetBoard} from "./board/board$";
 import {observeOn} from "rxjs/operators";
 
+import {watchSwipe} from "./$browser/touch";
+
+const boardWrapperEl = document.getElementById('boardWrapper');
+
 const keyboard$ = watchKeyboard();
+const swipe$ = watchSwipe(boardWrapperEl);
 const board$ = mountBoard();
-const player$ = mountPlayer({keyboard$, board$});
+const player$ = mountPlayer({keyboard$, board$, swipe$});
 
 board$
   .pipe(observeOn(animationFrameScheduler))
@@ -38,8 +43,8 @@ const game$ = merge(
 
 fromEvent(document, 'DOMContentLoaded').subscribe(() => {
   newBoard({
-    height: 20,
-    width: 20,
+    height: 18,
+    width: 32,
     generator: Generators.recursiveBackTrack,
   });
 

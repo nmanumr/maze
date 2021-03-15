@@ -38,7 +38,7 @@ export class Board {
 
     if (index >= this.size.width) {
       const cell = this.cells[index - this.size.width];
-      neighbours.set(RectangularDirection.TOP, cell);
+      neighbours.set(RectangularDirection.UP, cell);
     }
 
     if ((index + 1) % this.size.width != 0) {
@@ -48,7 +48,7 @@ export class Board {
 
     if (index < this.cells.length - this.size.width) {
       const cell = this.cells[index + this.size.width];
-      neighbours.set(RectangularDirection.BOTTOM, cell);
+      neighbours.set(RectangularDirection.DOWN, cell);
     }
 
     if (index % this.size.width != 0) {
@@ -75,7 +75,7 @@ export class Board {
 
   getRelativeDirection(cell1: Point | IPosition, cell2: Point | IPosition): RectangularDirection {
     if (cell1.y === cell2.y + 1) {
-      return RectangularDirection.TOP;
+      return RectangularDirection.UP;
     }
     if (cell1.x === cell2.x - 1) {
       return RectangularDirection.RIGHT;
@@ -84,7 +84,7 @@ export class Board {
       return RectangularDirection.LEFT;
     }
     if (cell1.y === cell2.y - 1) {
-      return RectangularDirection.BOTTOM;
+      return RectangularDirection.DOWN;
     }
     throw `'${cell1}' and '${cell2}' are not neighbours`;
   }

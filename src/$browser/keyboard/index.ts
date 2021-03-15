@@ -1,5 +1,5 @@
 import {fromEvent, Observable} from "rxjs";
-import {filter, map, share, tap} from "rxjs/operators";
+import {filter, map, share} from "rxjs/operators";
 import {getActiveElement} from "../element";
 
 /**

@@ -1,17 +1,17 @@
 import {Point} from "../utils";
 
 export const enum RectangularDirection {
-  LEFT = 'l',
-  RIGHT = 'r',
-  TOP = 't',
-  BOTTOM = 'b',
+  LEFT = 'left',
+  RIGHT = 'right',
+  UP = 'up',
+  DOWN = 'down',
 }
 
 export const OpposingRectangularDirection = {
   [RectangularDirection.LEFT]: RectangularDirection.RIGHT,
   [RectangularDirection.RIGHT]: RectangularDirection.LEFT,
-  [RectangularDirection.TOP]: RectangularDirection.BOTTOM,
-  [RectangularDirection.BOTTOM]: RectangularDirection.TOP,
+  [RectangularDirection.UP]: RectangularDirection.DOWN,
+  [RectangularDirection.DOWN]: RectangularDirection.UP,
 };
 
 export class Cell {
@@ -23,16 +23,16 @@ export class Cell {
   }
 
   setAllWalls() {
-    this.setWall(RectangularDirection.TOP);
+    this.setWall(RectangularDirection.UP);
     this.setWall(RectangularDirection.RIGHT);
-    this.setWall(RectangularDirection.BOTTOM);
+    this.setWall(RectangularDirection.DOWN);
     this.setWall(RectangularDirection.LEFT);
   }
 
   removeAllWalls() {
-    this.removeWall(RectangularDirection.TOP);
+    this.removeWall(RectangularDirection.UP);
     this.removeWall(RectangularDirection.RIGHT);
-    this.removeWall(RectangularDirection.BOTTOM);
+    this.removeWall(RectangularDirection.DOWN);
     this.removeWall(RectangularDirection.LEFT);
   }
 
