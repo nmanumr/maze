@@ -37,7 +37,9 @@ export default class RectangularSvg implements IRenderer {
 
   renderPlayer() {
     const size = this.cellSize - (this.playerPadding * 2);
-    return <rect width={size} height={size} fill="#3B82F6" stroke-width="0" rx="3" id="player"
+    return <rect width={size} height={size} fill="currentColor"
+                 class="text-blue-500"
+                 stroke-width="0" rx="3" id="player"
                  x={1 + this.playerPadding} y={1 + this.playerPadding}/>;
   }
 
