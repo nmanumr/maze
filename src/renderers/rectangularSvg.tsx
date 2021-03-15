@@ -11,6 +11,11 @@ export default class RectangularSvg implements IRenderer {
   private playerPadding = 7;
   private playerEl: HTMLElement;
 
+  constructor() {
+    let root = document.documentElement;
+    root.style.setProperty('--cell-size', (this.cellSize + 1) + 'px');
+  }
+
   render(board: Board, player$: Observable<Player>): HTMLElement {
     const width = this.cellSize * board.size.width + this.lineWidth;
     const height = this.cellSize * board.size.height + this.lineWidth;
@@ -23,14 +28,15 @@ export default class RectangularSvg implements IRenderer {
         this.playerEl.setAttribute('y', `${(this.cellSize * position.y) + this.playerPadding}`);
       })
 
+    let path = board.cells.map((value) => {
+      return this.renderCell(value, board.size);
+    }).join('');
+
     return (
-      <svg stroke="currentColor" fill="none" width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
+      <svg class="max-w-full max-h-full" stroke="currentColor" fill="none"
+           width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
         {this.playerEl}
-        {
-          board.cells.map((value) => {
-            return this.renderCell(value, board.size);
-          }).flat()
-        }
+        <path d={path} class="maze-wall" stroke-width={this.lineWidth} stroke-linecap="round"/>
       </svg>
     );
   }
@@ -43,44 +49,33 @@ export default class RectangularSvg implements IRenderer {
                  x={1 + this.playerPadding} y={1 + this.playerPadding}/>;
   }
 
-  renderCell(cell: Cell, size: ISize): HTMLElement[] {
+  renderCell(cell: Cell, size: ISize): string {
     const pivotX = cell.position.x * this.cellSize + (this.lineWidth / 2);
     const pivotY = cell.position.y * this.cellSize + (this.lineWidth / 2);
-
-    let lines = [];
+    let path = '';
 
     if (cell.hasWall(RectangularDirection.TOP)) {
       // Top wall
-      lines.push(
-        <path d={`M${pivotX},${pivotY} H${pivotX + this.cellSize}`}
-              stroke-width={this.lineWidth} stroke-linecap="round"/>
-      )
+      path += `M${pivotX},${pivotY}H${pivotX + this.cellSize}`;
     }
 
     if (cell.hasWall(RectangularDirection.LEFT)) {
       // Left wall
-      lines.push(
-        <path d={`M${pivotX},${pivotY} V${pivotY + this.cellSize}`}
-              stroke-width={this.lineWidth} stroke-linecap="round"/>
-      )
+      path += `M${pivotX},${pivotY}V${pivotY + this.cellSize}`;
     }
 
     if (cell.position.x + 1 === size.width && cell.hasWall(RectangularDirection.RIGHT)) {
       // Right Wall
-      lines.push(
-        <path d={`M${pivotX + this.cellSize},${pivotY} V${pivotY + this.cellSize}`}
-              stroke-width={this.lineWidth} stroke-linecap="round"/>
-      );
+      path += `M${pivotX + this.cellSize},${pivotY}V${pivotY + this.cellSize}`;
     }
 
     if (cell.position.y + 1 === size.height) {
       // Bottom Wall
-      lines.push(
-        <path d={`M${pivotX},${pivotY + this.cellSize} H${pivotX + this.cellSize}`}
-              stroke-width={this.lineWidth} stroke-linecap="round"/>
-      );
+      path += `M${pivotX},${pivotY + this.cellSize}H${pivotX + this.cellSize}`;
     }
 
-    return lines;
+    return path;
+
+    // return <path class="maze-wall" d={path.slice(0, -1)} stroke-width={this.lineWidth} stroke-linecap="round"/>;
   }
 }

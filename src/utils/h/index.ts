@@ -54,7 +54,6 @@ export function h(
     el = document.createElement(tag);
   }
 
-
   /* Set attributes, if any */
   if (attributes) {
     for (const attr of Object.keys(attributes)) {
