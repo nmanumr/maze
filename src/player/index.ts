@@ -40,7 +40,7 @@ export function mountPlayer(
           })
         }
       })
-    )
+    ).subscribe()
 
   keyboard$
     .pipe(

@@ -2,14 +2,17 @@ import {Generators} from './generators';
 import renderersManager, {Renderers} from "./renderers";
 import {watchKeyboard} from "./$browser/keyboard";
 import {mountPlayer} from "./player";
-import {fromEvent, merge} from "rxjs";
+import {animationFrameScheduler, fromEvent, merge} from "rxjs";
 import {mountBoard, newBoard, resetBoard} from "./board/board$";
+import {observeOn} from "rxjs/operators";
 
 const keyboard$ = watchKeyboard();
 const board$ = mountBoard();
 const player$ = mountPlayer({keyboard$, board$});
 
-board$.subscribe((board) => {
+board$
+  .pipe(observeOn(animationFrameScheduler))
+  .subscribe((board) => {
   renderersManager.loadRenderer(Renderers.rectangularSvg).then((render) => {
     const boardEl = document.getElementById('board');
 
@@ -20,6 +23,12 @@ board$.subscribe((board) => {
       render.render(board, player$)
     );
   })
+})
+
+keyboard$.subscribe(({type}) => {
+  if (type.toLowerCase() === 'r') {
+    resetBoard();
+  }
 })
 
 const game$ = merge(
