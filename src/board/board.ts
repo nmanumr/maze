@@ -1,5 +1,5 @@
 import {Cell, OpposingRectangularDirection, RectangularDirection} from './cell';
-import {Point} from "../utils";
+import {IPosition, Point} from "../utils";
 
 export interface ISize {
   readonly height: number;
@@ -28,8 +28,8 @@ export class Board {
     return this.cells[Math.round(Math.random() * (this.cells.length - 1))];
   }
 
-  private getCell(position: Point): Cell {
-    return this.cells[position.toIndex(this.size.width)];
+  private getCell(position: Point | IPosition): Cell {
+    return this.cells[Point.from(position).toIndex(this.size.width)];
   }
 
   getNeighbourCells(position: Point, visitableOnly: boolean = false): Map<RectangularDirection, Cell> {
@@ -98,6 +98,10 @@ export class Board {
     const relativeWallDirection = this.getRelativeDirection(cell1, cell2);
     const opposingWallDirection = OpposingRectangularDirection[relativeWallDirection];
     return this.getCell(cell1).hasWall(relativeWallDirection) && this.getCell(cell2).hasWall(opposingWallDirection);
+  }
+
+  hasWall(position: IPosition, direction: RectangularDirection) {
+    return this.getCell(position).hasWall(direction);
   }
 
   clone() {
