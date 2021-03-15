@@ -44,7 +44,7 @@ export class Cell {
     this.walls.set(dir, false);
   }
 
-  hasWall(dir: RectangularDirection): Boolean {
+  hasWall(dir: RectangularDirection): boolean {
     return this.walls.get(dir);
   }
 

@@ -32,9 +32,9 @@ export class Board {
     return this.cells[Point.from(position).toIndex(this.size.width)];
   }
 
-  getNeighbourCells(position: Point, visitableOnly: boolean = false): Map<RectangularDirection, Cell> {
-    const neighbours = new Map<RectangularDirection, Cell>();
-    const index = position.toIndex(this.size.width);
+  getNeighbourCells(position: Point | IPosition, visitableOnly: boolean = false): Map<RectangularDirection, Cell> {
+    let neighbours = new Map<RectangularDirection, Cell>(),
+      index = Point.from(position).toIndex(this.size.width);
 
     if (index >= this.size.width) {
       const cell = this.cells[index - this.size.width];
@@ -56,6 +56,15 @@ export class Board {
       neighbours.set(RectangularDirection.LEFT, cell);
     }
 
+    if (visitableOnly) {
+      const visitableNeighbours = Array.from(neighbours.entries())
+        .filter(([dir, cell]) => {
+          return !this.hasInterWall(cell.position, position);
+        });
+
+      neighbours = new Map(visitableNeighbours);
+    }
+
     return neighbours;
   }
 
@@ -64,7 +73,7 @@ export class Board {
     return cells.get(direction);
   }
 
-  getRelativeDirection(cell1: Point, cell2: Point): RectangularDirection {
+  getRelativeDirection(cell1: Point | IPosition, cell2: Point | IPosition): RectangularDirection {
     if (cell1.y === cell2.y + 1) {
       return RectangularDirection.TOP;
     }
@@ -80,21 +89,27 @@ export class Board {
     throw `'${cell1}' and '${cell2}' are not neighbours`;
   }
 
-  removeInterWall(cell1: Point, cell2: Point): void {
+  removeInterWall(cell1: Point | IPosition, cell2: Point | IPosition): void {
     const relativeWallDirection = this.getRelativeDirection(cell1, cell2);
     const opposingWallDirection = OpposingRectangularDirection[relativeWallDirection];
     this.getCell(cell1).removeWall(relativeWallDirection);
     this.getCell(cell2).removeWall(opposingWallDirection);
   }
 
-  addInterWall(cell1: Point, cell2: Point): void {
+  addInterWall(cell1: Point | IPosition, cell2: Point | IPosition): void {
     const relativeWallDirection = this.getRelativeDirection(cell1, cell2);
     const opposingWallDirection = OpposingRectangularDirection[relativeWallDirection];
     this.getCell(cell1).setWall(relativeWallDirection);
     this.getCell(cell2).setWall(opposingWallDirection);
   }
 
-  isConnected(cell1: Point, cell2: Point): Boolean {
+  hasInterWall(cell1: Point | IPosition, cell2: Point | IPosition): boolean {
+    const relativeWall = this.getRelativeDirection(cell1, cell2);
+    const opposingWall = OpposingRectangularDirection[relativeWall];
+    return this.getCell(cell1).hasWall(relativeWall) && this.getCell(cell2).hasWall(opposingWall);
+  }
+
+  isConnected(cell1: Point | IPosition, cell2: Point | IPosition): Boolean {
     const relativeWallDirection = this.getRelativeDirection(cell1, cell2);
     const opposingWallDirection = OpposingRectangularDirection[relativeWallDirection];
     return this.getCell(cell1).hasWall(relativeWallDirection) && this.getCell(cell2).hasWall(opposingWallDirection);
@@ -105,7 +120,7 @@ export class Board {
   }
 
   clone() {
-    const board = new Board(this.size.width,this.size.height);
+    const board = new Board(this.size.width, this.size.height);
     for (let i = 0; i < board.cells.length; i++) {
       board.cells[i] = this.cells[i].clone();
     }

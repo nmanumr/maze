@@ -33,21 +33,31 @@ export function mountPlayer(
     .pipe(
       withLatestFrom($player, board$),
       tap(([{type}, player, board]) => {
+        let assistedPlayer = true;
         let {x, y} = player.position;
+
         // @ts-ignore
         if (board.hasWall({x, y}, keyMap[type])) {
           return;
         }
 
-        if (type === 'ArrowRight' && x < (board.size.width - 1)) {
-          x++;
-        } else if (type === 'ArrowLeft' && x > 0) {
-          x--;
-        } else if (type === 'ArrowUp' && y > 0) {
-          y--;
-        } else if (type === 'ArrowDown' && y < (board.size.height - 1)) {
-          y++;
-        }
+        do {
+          if (type === 'ArrowRight' && x < (board.size.width - 1)) {
+            x++;
+          } else if (type === 'ArrowLeft' && x > 0) {
+            x--;
+          } else if (type === 'ArrowUp' && y > 0) {
+            y--;
+          } else if (type === 'ArrowDown' && y < (board.size.height - 1)) {
+            y++;
+          }
+
+          const visitable = board.getNeighbourCells({x, y}, true);
+          // @ts-ignore
+          if (!visitable.has(keyMap[type]) || visitable.size > 2) {
+            break;
+          }
+        } while (assistedPlayer);
 
         $player.next({
           visible: true,
