@@ -2,30 +2,41 @@ import {Generators} from './generators';
 import renderersManager, {Renderers} from "./renderers";
 import {watchKeyboard} from "./$browser/keyboard";
 import {mountPlayer} from "./player";
-import {merge} from "rxjs";
-import {mountBoard, newBoard} from "./board/board$";
+import {fromEvent, merge} from "rxjs";
+import {mountBoard, newBoard, resetBoard} from "./board/board$";
 
 const keyboard$ = watchKeyboard();
 const board$ = mountBoard();
 const player$ = mountPlayer({keyboard$, board$});
+
+board$.subscribe((board) => {
+  renderersManager.loadRenderer(Renderers.rectangularSvg).then((render) => {
+    const boardEl = document.getElementById('board');
+
+    while (boardEl.lastElementChild) {
+      boardEl.removeChild(boardEl.lastElementChild);
+    }
+    boardEl.appendChild(
+      render.render(board, player$)
+    );
+  })
+})
 
 const game$ = merge(
   player$,
   board$
 )
 
-board$.subscribe((board) => {
-  renderersManager.loadRenderer(Renderers.rectangularSvg).then((render) => {
-    document.getElementById('board').appendChild(
-      render.render(board, player$)
-    );
-  })
-})
+fromEvent(document, 'DOMContentLoaded').subscribe(() => {
+  newBoard({
+    height: 20,
+    width: 20,
+    generator: Generators.recursiveBackTrack,
+  });
 
-game$.subscribe();
+  game$.subscribe();
 
-newBoard({
-  height: 20,
-  width: 20,
-  generator: Generators.recursiveBackTrack,
+  const ResetEl = document.getElementById('reset');
+  fromEvent(ResetEl, 'click')
+    .subscribe(resetBoard);
 })

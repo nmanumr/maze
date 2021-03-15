@@ -1,25 +1,17 @@
-import {Observable, Subject} from "rxjs";
+import {BehaviorSubject, Observable} from "rxjs";
 import {Board} from "./board";
 import {BoardOptions} from "./types";
-import {concatMap, map, share, take} from "rxjs/operators";
+import {concatMap, filter, share} from "rxjs/operators";
 import generatorsManager from "../generators";
 
-interface MountOptions {
-  board$: Observable<BoardOptions>;
-}
 
-
-const board$ = new Subject<BoardOptions>()
+const board$ = new BehaviorSubject<BoardOptions>(null)
 
 /**
  * Reset board with last board settings
  */
 export function resetBoard() {
-  board$
-    .pipe(take(1))
-    .subscribe((options) => {
-      board$.next(options);
-    });
+  board$.next(board$.getValue());
 }
 
 /**
@@ -29,6 +21,7 @@ export function newBoard(options: BoardOptions) {
   board$.next(options);
 }
 
+(window as any).board = {resetBoard, newBoard};
 
 /**
  *
@@ -36,6 +29,7 @@ export function newBoard(options: BoardOptions) {
 export function mountBoard(): Observable<Board> {
   return board$
     .pipe(
+      filter(ev => !!ev),
       concatMap(async ({width, height, generator}) => {
         let board = new Board(width, height);
         board = (await generatorsManager.loadGenerator(generator)).generate(board);

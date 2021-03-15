@@ -24,14 +24,27 @@ const keyMap = {
 export function mountPlayer(
   {keyboard$, board$}: MountOptions
 ): Observable<Player> {
-  const $player = new BehaviorSubject<Player>({
+  const player$ = new BehaviorSubject<Player>({
     visible: true,
     position: {x: 0, y: 0}
   });
 
+  board$
+    .pipe(
+      withLatestFrom(player$),
+      tap(([_, {position}]) => {
+        if (position.x !== 0 || position.y !== 0) {
+          player$.next({
+            visible: true,
+            position: {x: 0, y: 0}
+          })
+        }
+      })
+    )
+
   keyboard$
     .pipe(
-      withLatestFrom($player, board$),
+      withLatestFrom(player$, board$),
       tap(([{type}, player, board]) => {
         let assistedPlayer = true;
         let {x, y} = player.position;
@@ -59,14 +72,14 @@ export function mountPlayer(
           }
         } while (assistedPlayer);
 
-        $player.next({
+        player$.next({
           visible: true,
           position: {x, y}
         });
       })
-    ).subscribe()
+    ).subscribe();
 
-  return $player.pipe(
+  return player$.pipe(
     observeOn(animationFrameScheduler),
     distinctUntilChanged((a, b) => {
       return a.visible === b.visible
