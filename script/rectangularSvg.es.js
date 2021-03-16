@@ -102,6 +102,10 @@ var svgTags = [
     "view"
 ];
 
+/*
+ * Adopted from https://github.com/squidfunk/mkdocs-material/blob/master/src/assets/javascripts/utilities/h/index.ts
+ * with additional support for svg elements
+ */
 /**
  * Append a child node to an element
  *
@@ -134,8 +138,10 @@ function appendChild(el, child) {
  */
 function h(tag, attributes, ...children) {
     let el;
+    /* Handle svg element */
     if (svgTags.includes(tag)) {
         el = document.createElementNS("http://www.w3.org/2000/svg", tag);
+        /* Handle normal html element */
     }
     else {
         el = document.createElement(tag);
@@ -161,36 +167,66 @@ function h(tag, attributes, ...children) {
 
 class RectangularSvg {
     constructor() {
+        /*
+         * Some rendering options
+         * should some easier way to set them
+         */
         this.cellSize = 30;
         this.lineWidth = 2;
         this.playerPadding = 7;
+        // setting a css variable for wall animation
         let root = document.documentElement;
-        root.style.setProperty('--cell-size', (this.cellSize + 1) + 'px');
+        root.style.setProperty('--cell-size', this.cellSize + 'px');
     }
+    /**
+     * Renders game board to svg
+     *
+     * The idea is renderer will be initialized only once
+     * and then render function will be called for each new board,
+     * while renderer will take care of player changes without explicitly
+     * rerendering of board.
+     *
+     * @param board individual board snapshot
+     * @param player$ Observable of player position changes
+     */
     render(board, player$) {
-        const width = this.cellSize * board.size.width + this.lineWidth;
-        const height = this.cellSize * board.size.height + this.lineWidth;
-        this.playerEl = this.renderPlayer();
+        const width = this.cellSize * (board.size.width + 2) + this.lineWidth;
+        const height = this.cellSize * (board.size.height + 2) + this.lineWidth;
+        const playerEl = this.renderPlayer();
+        // listen to player changes and update player on board
         player$
             .pipe(skip(1))
             .subscribe(({ position }) => {
-            this.playerEl.setAttribute('x', `${(this.cellSize * position.x) + this.playerPadding}`);
-            this.playerEl.setAttribute('y', `${(this.cellSize * position.y) + this.playerPadding}`);
+            const [x, y] = [position.x, position.y]
+                .map((e) => (this.cellSize * e) + this.playerPadding + this.cellSize);
+            playerEl.setAttribute('x', x + '');
+            playerEl.setAttribute('y', y + '');
         });
+        // render path definition string for each cell
+        // and join them to create single path string
+        // for whole board
         let path = board.cells.map((value) => {
             return this.renderCell(value, board.size);
         }).join('');
-        return (h("svg", { class: "max-w-full max-h-full", stroke: "currentColor", fill: "none", width: width, height: height, viewBox: `0 0 ${width} ${height}` },
-            this.playerEl,
+        return (h("svg", { stroke: "currentColor", fill: "none", width: width, height: height, viewBox: `0 0 ${width} ${height}` },
+            playerEl,
             h("path", { d: path, class: "maze-wall", "stroke-width": this.lineWidth, "stroke-linecap": "round" })));
     }
+    /**
+     * Renders player as svg rect
+     */
     renderPlayer() {
         const size = this.cellSize - (this.playerPadding * 2);
-        return h("rect", { width: size, height: size, fill: "currentColor", class: "text-blue-500", "stroke-width": "0", rx: "3", id: "player", x: 1 + this.playerPadding, y: 1 + this.playerPadding });
+        return h("rect", { width: size, height: size, fill: "currentColor", class: "text-blue-500", "stroke-width": "0", rx: "3", id: "player", x: 1 + this.playerPadding + this.cellSize, y: 1 + this.playerPadding + this.cellSize });
     }
+    /**
+     * Renders a single cell walls to svg path string
+     * @param cell cell to render
+     * @param size board size
+     */
     renderCell(cell, size) {
-        const pivotX = cell.position.x * this.cellSize + (this.lineWidth / 2);
-        const pivotY = cell.position.y * this.cellSize + (this.lineWidth / 2);
+        const pivotX = cell.position.x * this.cellSize + (this.lineWidth / 2) + this.cellSize;
+        const pivotY = cell.position.y * this.cellSize + (this.lineWidth / 2) + this.cellSize;
         let path = '';
         if (cell.hasWall("up" /* UP */)) {
             // Top wall
@@ -209,7 +245,6 @@ class RectangularSvg {
             path += `M${pivotX},${pivotY + this.cellSize}H${pivotX + this.cellSize}`;
         }
         return path;
-        // return <path class="maze-wall" d={path.slice(0, -1)} stroke-width={this.lineWidth} stroke-linecap="round"/>;
     }
 }
 
