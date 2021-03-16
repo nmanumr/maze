@@ -32,16 +32,19 @@ export default class RectangularSvg implements IRenderer {
    * @param player$ Observable of player position changes
    */
   render(board: Board, player$: Observable<Player>): HTMLElement {
-    const width = this.cellSize * board.size.width + this.lineWidth;
-    const height = this.cellSize * board.size.height + this.lineWidth;
+    const width = this.cellSize * (board.size.width + 2) + this.lineWidth;
+    const height = this.cellSize * (board.size.height + 2) + this.lineWidth;
     const playerEl = this.renderPlayer();
 
     // listen to player changes and update player on board
     player$
       .pipe(skip(1))
       .subscribe(({position}) => {
-        playerEl.setAttribute('x', `${(this.cellSize * position.x) + this.playerPadding}`);
-        playerEl.setAttribute('y', `${(this.cellSize * position.y) + this.playerPadding}`);
+        const [x, y] = [position.x, position.y]
+          .map((e) => (this.cellSize * e) + this.playerPadding + this.cellSize);
+
+        playerEl.setAttribute('x', x + '');
+        playerEl.setAttribute('y', y + '');
       })
 
     // render path definition string for each cell
@@ -67,7 +70,7 @@ export default class RectangularSvg implements IRenderer {
     return <rect width={size} height={size} fill="currentColor"
                  class="text-blue-500"
                  stroke-width="0" rx="3" id="player"
-                 x={1 + this.playerPadding} y={1 + this.playerPadding}/>;
+                 x={1 + this.playerPadding + this.cellSize} y={1 + this.playerPadding + this.cellSize}/>;
   }
 
   /**
@@ -76,8 +79,8 @@ export default class RectangularSvg implements IRenderer {
    * @param size board size
    */
   renderCell(cell: Cell, size: ISize): string {
-    const pivotX = cell.position.x * this.cellSize + (this.lineWidth / 2);
-    const pivotY = cell.position.y * this.cellSize + (this.lineWidth / 2);
+    const pivotX = cell.position.x * this.cellSize + (this.lineWidth / 2) + this.cellSize;
+    const pivotY = cell.position.y * this.cellSize + (this.lineWidth / 2) + this.cellSize;
     let path = '';
 
     if (cell.hasWall(RectangularDirection.UP)) {

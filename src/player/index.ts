@@ -3,6 +3,7 @@ import {IPosition} from "../utils";
 import {Keyboard, Swipe} from "../browser$";
 import {distinctUntilChanged, map, observeOn, tap, withLatestFrom} from "rxjs/operators";
 import {Board, RectangularDirection} from "../board";
+import confetti from 'canvas-confetti';
 
 export interface MountOptions {
   keyboard$: Observable<Keyboard>;
@@ -66,7 +67,7 @@ export function mountPlayer(
       tap(([{dir}, player, board]) => {
         let assistedPlayer = true;
         let {x, y} = player.position;
-        if (board.hasWall({x, y}, dir)) {
+        if (x >= board.size.width || y >= board.size.height || board.hasWall({x, y}, dir)) {
           return;
         }
 
@@ -86,6 +87,17 @@ export function mountPlayer(
             break;
           }
         } while (assistedPlayer);
+
+        if (x === board.size.width - 1 && y === board.size.height - 1) {
+          // extract out this logic
+          setTimeout(() => {
+            player$.next({
+              visible: true,
+              position: {x: x + 1, y}
+            });
+            confetti({origin: {y: 0.8}, particleCount: 100}).then();
+          }, 250);
+        }
 
         player$.next({
           visible: true,

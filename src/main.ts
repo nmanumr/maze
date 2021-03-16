@@ -1,9 +1,9 @@
 import {watchKeyboard, watchSwipe} from "./browser$";
-import {animationFrameScheduler, fromEvent} from "rxjs";
 import {Generators} from './generators';
 import renderersManager, {Renderers} from "./renderers";
 import {mountPlayer} from "./player";
 import {mountBoard, newBoard, resetBoard} from "./board/board$";
+import {animationFrameScheduler, fromEvent} from "rxjs";
 import {observeOn} from "rxjs/operators";
 
 
@@ -28,16 +28,16 @@ const player$ = mountPlayer({keyboard$, board$, swipe$});
 board$
   .pipe(observeOn(animationFrameScheduler))
   .subscribe((board) => {
-  renderersManager.loadRenderer(Renderers.rectangularSvg).then((render) => {
+    renderersManager.loadRenderer(Renderers.rectangularSvg).then((render) => {
 
-    while (boardEl.lastElementChild) {
-      boardEl.removeChild(boardEl.lastElementChild);
-    }
-    boardEl.appendChild(
-      render.render(board, player$)
-    );
+      while (boardEl.lastElementChild) {
+        boardEl.removeChild(boardEl.lastElementChild);
+      }
+      boardEl.appendChild(
+        render.render(board, player$)
+      );
+    })
   })
-})
 
 
 /* handle keyboard shortcuts like 'r' to reset game */
