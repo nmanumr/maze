@@ -18,7 +18,7 @@
 
 #board > svg {
     /* to scale bord down on small screens */
-    max-height: calc(100vh - 104px);
+    max-height: calc(100vh - 72px);
     max-width: 100%;
 }
 
