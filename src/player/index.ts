@@ -1,6 +1,6 @@
 import {animationFrameScheduler, BehaviorSubject, merge, Observable} from "rxjs";
 import {IPosition} from "../utils";
-import {Keyboard, Swipe} from "../$browser";
+import {Keyboard, Swipe} from "../browser$";
 import {distinctUntilChanged, map, observeOn, tap, withLatestFrom} from "rxjs/operators";
 import {Board, RectangularDirection} from "../board";
 

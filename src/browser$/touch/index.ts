@@ -7,6 +7,9 @@ export interface Swipe {
   dir: RectangularDirection;
 }
 
+/**
+ * Watch swipe events on the given element using hammerjs
+ */
 export function watchSwipe(element = document.documentElement): Observable<Swipe> {
   const mc = new Hammer.Manager(element);
 

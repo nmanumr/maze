@@ -3,6 +3,10 @@ export interface IPosition {
   readonly y: number;
 }
 
+/**
+ * Base implementation of 2d Point
+ * Point and IPosition are interchangeably whenever possible
+ */
 export class Point {
   constructor(public readonly x: number, public readonly y: number) {
   }

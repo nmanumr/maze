@@ -4,16 +4,38 @@
 
 
 :root {
+    /* just dummy value actual value is set from renderer class */
     --cell-size: 0;
 }
 
 #player {
+    /*
+     * Basically, we only need transition on x, y only
+     * but, I'm not sure how to do that
+     */
     transition: all .15s ease;
 }
 
+#board > svg {
+    /* to scale bord down on small screens */
+    max-height: calc(100vh - 104px);
+    max-width: 100%;
+}
+
 .maze-wall {
+    /*
+     * Nice little trick to make growing wall animation
+     * Surprisingly, this works for when multiple path
+     * definitions are combined in a single path tag
+     */
     stroke-dasharray: var(--cell-size);
     stroke-dashoffset: 0;
+
+    /*
+     * Initially I was using transition and then setting
+     * states from javascript, replacing them with animation
+     * save a lot of code
+     */
     animation: maze-wall .5s;
 }
 

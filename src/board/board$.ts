@@ -21,8 +21,6 @@ export function newBoard(options: BoardOptions) {
   board$.next(options);
 }
 
-(window as any).board = {resetBoard, newBoard};
-
 /**
  *
  */

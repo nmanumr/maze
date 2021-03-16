@@ -35,6 +35,7 @@
     "typescript": "^4.2.3"
   },
   "dependencies": {
+    "canvas-confetti": "^1.4.0",
     "hammerjs": "^2.0.8",
     "preact": "^10.5.12",
     "rxjs": "^6.6.6"

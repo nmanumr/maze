@@ -1,3 +1,8 @@
+/*
+ * Adopted from https://github.com/squidfunk/mkdocs-material/blob/master/src/assets/javascripts/utilities/h/index.ts
+ * with additional support for svg elements
+ */
+
 import {JSX as JSXInternal} from "preact"
 import svgTags from "./svgTags";
 
@@ -48,8 +53,12 @@ export function h(
   tag: string, attributes: Attributes | null, ...children: Child[]
 ): HTMLElement | SVGElement {
   let el;
+
+  /* Handle svg element */
   if (svgTags.includes(tag)) {
     el = document.createElementNS("http://www.w3.org/2000/svg", tag);
+
+    /* Handle normal html element */
   } else {
     el = document.createElement(tag);
   }
@@ -74,6 +83,8 @@ export function h(
   return el
 }
 
+
+/* This override is necessary for types to work */
 export declare namespace h {
   namespace JSX {
     type Element = HTMLElement
