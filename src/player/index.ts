@@ -95,7 +95,7 @@ export function mountPlayer(
               visible: true,
               position: {x: x + 1, y}
             });
-            confetti({origin: {y: 0.8}, particleCount: 100}).then();
+            confetti({origin: {y: 0.8}, particleCount: 200}).then();
           }, 250);
         }
 
