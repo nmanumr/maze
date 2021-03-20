@@ -1,8 +1,8 @@
 import {h} from "../utils";
 import {IRenderer} from "./types";
-import {Board, Cell, ISize, RectangularDirection} from "../board";
+import {Board, Cell, Size, RectangularDirection} from "../board";
 import {Observable} from "rxjs";
-import {Player} from "../player";
+import {PlayerState} from "../player";
 import {skip} from "rxjs/operators";
 
 export default class RectangularSvg implements IRenderer {
@@ -31,7 +31,7 @@ export default class RectangularSvg implements IRenderer {
    * @param board individual board snapshot
    * @param player$ Observable of player position changes
    */
-  render(board: Board, player$: Observable<Player>): HTMLElement {
+  render(board: Board, player$: Observable<PlayerState>): HTMLElement {
     const width = this.cellSize * (board.size.width + 2) + this.lineWidth;
     const height = this.cellSize * (board.size.height + 2) + this.lineWidth;
     const playerEl = this.renderPlayer();
@@ -78,7 +78,7 @@ export default class RectangularSvg implements IRenderer {
    * @param cell cell to render
    * @param size board size
    */
-  renderCell(cell: Cell, size: ISize): string {
+  renderCell(cell: Cell, size: Size): string {
     const pivotX = cell.position.x * this.cellSize + (this.lineWidth / 2) + this.cellSize;
     const pivotY = cell.position.y * this.cellSize + (this.lineWidth / 2) + this.cellSize;
     let path = '';

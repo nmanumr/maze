@@ -1,4 +1,4 @@
-import {Point} from "../utils";
+import {Position} from "../utils";
 
 export const enum RectangularDirection {
   LEFT = 'left',
@@ -17,7 +17,7 @@ export const OpposingRectangularDirection = {
 export class Cell {
   public readonly walls: Map<RectangularDirection, boolean>;
 
-  constructor(public readonly position: Point) {
+  constructor(public readonly position: Position) {
     this.walls = new Map<RectangularDirection, boolean>();
     this.setAllWalls();
   }

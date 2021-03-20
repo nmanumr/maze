@@ -1,8 +1,8 @@
-import {watchKeyboard, watchSwipe} from "./browser$";
+import {watchKeyboard, watchSwipe} from "./browser";
 import {Generators} from './generators';
 import renderersManager, {Renderers} from "./renderers";
 import {mountPlayer} from "./player";
-import {mountBoard, newBoard, resetBoard} from "./board/board$";
+import {mountBoard, newBoard, resetBoard} from "./board";
 import {animationFrameScheduler, fromEvent} from "rxjs";
 import {observeOn} from "rxjs/operators";
 

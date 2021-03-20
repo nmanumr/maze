@@ -1,5 +1,6 @@
 import {Board, Cell, RectangularDirection} from '../board';
 import {IGenerator} from "./types";
+import {stringifyPosition} from "../utils";
 
 /**
  * Depth first recursive backtrack maze generation algorithm
@@ -20,14 +21,14 @@ export default class RecursiveBacktrack implements IGenerator {
   }
 
   visitCell(cell: Cell, visitedCells: Map<string, Cell>, board: Board) {
-    visitedCells.set(cell.position.stringify(), cell);
+    visitedCells.set(stringifyPosition(cell.position), cell);
     const cells = Array.from(board.getNeighbourCells(cell.position).values());
 
     while (cells.length !== 0) {
       const i = Math.round(Math.random() * (cells.length - 1));
       const randomCell = cells[i];
 
-      if (!visitedCells.has(randomCell.position.stringify())) {
+      if (!visitedCells.has(stringifyPosition(randomCell.position))) {
         board.removeInterWall(cell.position, randomCell.position);
         this.visitCell(randomCell, visitedCells, board);
       }

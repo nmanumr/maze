@@ -1,11 +1,28 @@
 import {BehaviorSubject, Observable} from "rxjs";
 import {Board} from "./board";
-import {BoardOptions} from "./types";
 import {concatMap, filter, share} from "rxjs/operators";
-import generatorsManager from "../generators";
+import generatorsManager, {Generators} from "../generators";
 
+/*--------------
+ * Interfaces
+ *-------------- */
+
+export interface BoardOptions {
+  width: number;
+  height: number;
+  generator: Generators,
+}
+
+/*-------------------
+ * Reactive instance
+ *------------------- */
 
 const board$ = new BehaviorSubject<BoardOptions>(null)
+
+
+/*-------------------
+ * Actions
+ *------------------- */
 
 /**
  * Reset board with last board settings
@@ -21,9 +38,11 @@ export function newBoard(options: BoardOptions) {
   board$.next(options);
 }
 
-/**
- *
- */
+
+/*-------------------
+ * Functions
+ *------------------- */
+
 export function mountBoard(): Observable<Board> {
   return board$
     .pipe(
