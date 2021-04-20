@@ -1,2 +1,0 @@
-export default class{generate(e){e=e.clone();const l=new Map,t=e.getRandomCell();return e.cells[0].removeWall("left"),e.cells[e.cells.length-1].removeWall("right"),this.visitCell(t,l,e),e}visitCell(e,l,t){l.set(e.position.stringify(),e);const i=Array.from(t.getNeighbourCells(e.position).values());for(;0!==i.length;){const s=Math.round(Math.random()*(i.length-1)),o=i[s];l.has(o.position.stringify())||(t.removeInterWall(e.position,o.position),this.visitCell(o,l,t)),i.splice(s,1)}}}
-//# sourceMappingURL=recursiveBackTrack.es.js.map
