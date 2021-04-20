@@ -6,6 +6,11 @@ import {terser} from "rollup-plugin-terser";
 export default {
   input: './src/main.ts',
   preserveEntrySignatures: false,
+  manualChunks(id) {
+    if (id.includes('rxjs')) {
+      return 'rxjs';
+    }
+  },
   plugins: [
     nodeResolve(),
     commonjs(),

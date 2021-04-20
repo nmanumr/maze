@@ -1,4 +1,5 @@
 import {IRenderer} from "./types";
+import RectangularSvg from './rectangularSvg';
 
 export enum Renderers {
   rectangularSvg
@@ -16,7 +17,7 @@ class RendererManager {
     let module;
     switch (name) {
       case Renderers.rectangularSvg:
-        module = (await import('./rectangularSvg')).default;
+        module = RectangularSvg;
         break;
     }
 

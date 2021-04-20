@@ -1,9 +1,8 @@
 import {h} from "../utils";
 import {IRenderer} from "./types";
-import {Board, Cell, Size, RectangularDirection} from "../board";
+import {Board, Cell, RectangularDirection} from "../board";
 import {Observable} from "rxjs";
-import {PlayerState} from "../player";
-import {skip} from "rxjs/operators";
+import {Player} from "../player";
 
 export default class RectangularSvg implements IRenderer {
   /*
@@ -31,14 +30,13 @@ export default class RectangularSvg implements IRenderer {
    * @param board individual board snapshot
    * @param player$ Observable of player position changes
    */
-  render(board: Board, player$: Observable<PlayerState>): HTMLElement {
+  render(board: Board, player$: Observable<Player>): HTMLElement {
     const width = this.cellSize * (board.size.width + 2) + this.lineWidth;
     const height = this.cellSize * (board.size.height + 2) + this.lineWidth;
     const playerEl = this.renderPlayer();
 
     // listen to player changes and update player on board
     player$
-      .pipe(skip(1))
       .subscribe(({position}) => {
         const [x, y] = [position.x, position.y]
           .map((e) => (this.cellSize * e) + this.playerPadding + this.cellSize);
@@ -78,7 +76,7 @@ export default class RectangularSvg implements IRenderer {
    * @param cell cell to render
    * @param size board size
    */
-  renderCell(cell: Cell, size: Size): string {
+  renderCell(cell: Cell, size: { width: number, height: number }): string {
     const pivotX = cell.position.x * this.cellSize + (this.lineWidth / 2) + this.cellSize;
     const pivotY = cell.position.y * this.cellSize + (this.lineWidth / 2) + this.cellSize;
     let path = '';

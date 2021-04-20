@@ -1,10 +1,5 @@
 import {Cell, OpposingRectangularDirection, RectangularDirection} from './cell';
-import {Position, positionToIndex} from "../utils";
-
-export interface Size {
-  readonly height: number;
-  readonly width: number;
-}
+import {Position, positionToIndex, Size} from "../utils";
 
 export class Board {
   public readonly cells: Array<Cell>;

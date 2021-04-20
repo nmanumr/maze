@@ -1,5 +1,5 @@
 import {Board} from "../board";
 
-export interface IGenerator {
+export interface Generator {
   generate(board: Board): Board;
 }

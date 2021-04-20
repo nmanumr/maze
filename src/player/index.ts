@@ -2,7 +2,7 @@ import {animationFrameScheduler, BehaviorSubject, merge, Observable} from "rxjs"
 import {Keyboard, Swipe} from "../browser";
 import {Board, RectangularDirection} from "../board";
 import {Position} from "../utils";
-import {filter, map, observeOn, tap, withLatestFrom} from "rxjs/operators";
+import {filter, map, observeOn, withLatestFrom} from "rxjs/operators";
 
 /*------------------
  * Types
@@ -10,12 +10,12 @@ import {filter, map, observeOn, tap, withLatestFrom} from "rxjs/operators";
 
 export interface MountOptions {
   keyboard$: Observable<Keyboard>;
-  board$: Observable<Board>;
   swipe$: Observable<Swipe>;
+  board$: Observable<Board>;
 }
 
-export interface PlayerState {
-  active: boolean;
+export interface Player {
+  state: 'active' | 'inactive' | 'hidden';
   position: Position;
 }
 
@@ -38,8 +38,8 @@ export const keyMap = {
  * Reactive instance
  *--------------------*/
 
-export const player$ = new BehaviorSubject<PlayerState>({
-  active: true,
+const player$ = new BehaviorSubject<Player>({
+  state: 'active',
   position: {x: 0, y: 0}
 });
 
@@ -52,9 +52,20 @@ export const player$ = new BehaviorSubject<PlayerState>({
  * Set player Position
  */
 export function setPlayerPosition(position: Position) {
-  const {active} = player$.getValue();
+  const {state} = player$.getValue();
   player$.next({
-    active,
+    state,
+    position,
+  })
+}
+
+/**
+ * Set player Position
+ */
+export function setPlayerState(state: 'active' | 'inactive' | 'hidden') {
+  const {position} = player$.getValue();
+  player$.next({
+    state,
     position,
   })
 }
@@ -97,7 +108,7 @@ export function moveInDirection(dir: RectangularDirection, board: Board) {
  */
 export function mountPlayer(
   {keyboard$, swipe$, board$}: MountOptions
-): Observable<PlayerState> {
+): Observable<Player> {
 
   // reset player whenever new board is emitted
   board$.subscribe(() => {
@@ -124,28 +135,19 @@ export function mountPlayer(
   control$
     .pipe(
       withLatestFrom(board$),
+      // don't move player if there is a wall in control direction
+      // or player is not active
       filter(([{dir}, board]) => {
-        const {position: {x, y}, active} = player$.getValue();
-        return active && !board.hasWall({x, y}, dir);
-      }),
-      tap(([{dir}, board]) => {
-        moveInDirection(dir, board)
+        const {position: {x, y}, state} = player$.getValue();
+        return state === 'active' && !board.hasWall({x, y}, dir);
       })
-    ).subscribe();
+    )
+    .subscribe(([{dir}, board]) => {
+      moveInDirection(dir, board)
+    });
 
   // use animationFrameScheduler to ensure smooth animations
   return player$.pipe(
     observeOn(animationFrameScheduler)
   )
 }
-
-
-// if (x === board.size.width - 1 && y === board.size.height - 1) {
-//   setTimeout(() => {
-//     player$.next({
-//       active: false,
-//       position: {x: x + 1, y}
-//     });
-//     confetti({origin: {y: 0.8}, particleCount: 200}).then();
-//   }, 250);
-// }

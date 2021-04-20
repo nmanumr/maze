@@ -1,6 +1,5 @@
-import Hammer from 'hammerjs';
-import {fromEvent, merge, Observable} from "rxjs";
-import {map, share} from "rxjs/operators";
+import {from, fromEvent, merge, NEVER, Observable} from "rxjs";
+import {map, share, switchMap} from "rxjs/operators";
 import {RectangularDirection} from "../../board";
 
 export interface Swipe {
@@ -11,19 +10,28 @@ export interface Swipe {
  * Watch swipe events on the given element using hammerjs
  */
 export function watchSwipe(element = document.documentElement): Observable<Swipe> {
-  const mc = new Hammer.Manager(element);
+  const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0);
 
-  mc.add(new Hammer.Swipe());
+  if (!isTouchDevice) {
+    return NEVER;
+  }
 
-  return merge(
-    fromEvent(mc, 'swipeleft'),
-    fromEvent(mc, 'swiperight'),
-    fromEvent(mc, 'swipeup'),
-    fromEvent(mc, 'swipedown'),
-  ).pipe(
-    map(({type}) => {
-      return {dir: type.slice(5)};
-    }),
-    share(),
-  )
+  return from(import('hammerjs'))
+    .pipe(
+      switchMap((hammer) => {
+        const mc = new hammer.Manager(element);
+        mc.add(new hammer.Swipe());
+
+        return merge(
+          fromEvent(mc, 'swipeleft'),
+          fromEvent(mc, 'swiperight'),
+          fromEvent(mc, 'swipeup'),
+          fromEvent(mc, 'swipedown'),
+        )
+      }),
+      map(({type}) => {
+        return {dir: type.slice(5)};
+      }),
+      share(),
+    )
 }

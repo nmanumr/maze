@@ -1,5 +1,5 @@
 import {Board, Cell, RectangularDirection} from '../board';
-import {IGenerator} from "./types";
+import {Generator} from "./types";
 import {stringifyPosition} from "../utils";
 
 /**
@@ -8,32 +8,40 @@ import {stringifyPosition} from "../utils";
  *
  * Generates long dead ends making the solution little difficult
  */
-export default class RecursiveBacktrack implements IGenerator {
+export default class RecursiveBacktrack implements Generator {
   generate(board: Board): Board {
     board = board.clone();
-    const visitedCells = new Map();
-    const randomCell = board.getRandomCell();
+
+    // open top-left and bottom-right walls
     board.cells[0].removeWall(RectangularDirection.LEFT);
     board.cells[board.cells.length - 1].removeWall(RectangularDirection.RIGHT);
+
+    // select a random cell and start from that cell
+    const visitedCells = new Set<string>();
+    const randomCell = board.getRandomCell();
 
     this.visitCell(randomCell, visitedCells, board);
     return board;
   }
 
-  visitCell(cell: Cell, visitedCells: Map<string, Cell>, board: Board) {
-    visitedCells.set(stringifyPosition(cell.position), cell);
-    const cells = Array.from(board.getNeighbourCells(cell.position).values());
+  visitCell(cell: Cell, visitedCells: Set<string>, board: Board) {
+    visitedCells.add(stringifyPosition(cell.position));
+    const neighbourCells = Array.from(board.getNeighbourCells(cell.position).values());
 
-    while (cells.length !== 0) {
-      const i = Math.round(Math.random() * (cells.length - 1));
-      const randomCell = cells[i];
+    while (neighbourCells.length !== 0) {
+      // select a random neighbour
+      const i = Math.round(Math.random() * (neighbourCells.length - 1));
+      const randomCell = neighbourCells[i];
 
+      // if random neighbour is not already visited remove wall between
+      // random neighbour and current cell and recursively visit that neighbour
       if (!visitedCells.has(stringifyPosition(randomCell.position))) {
         board.removeInterWall(cell.position, randomCell.position);
         this.visitCell(randomCell, visitedCells, board);
       }
 
-      cells.splice(i, 1);
+      // after visit remove random neighbour from neighbourCells
+      neighbourCells.splice(i, 1);
     }
   }
 }
