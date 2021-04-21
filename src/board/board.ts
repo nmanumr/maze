@@ -23,7 +23,7 @@ export class Board {
     return this.cells[Math.round(Math.random() * (this.cells.length - 1))];
   }
 
-  private getCell(position: Position): Cell {
+  getCell(position: Position): Cell {
     return this.cells[positionToIndex(position, this.size.width)];
   }
 

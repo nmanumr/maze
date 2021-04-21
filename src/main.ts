@@ -26,8 +26,8 @@ mountGame({keyboard$, swipe$, boardEl});
  * some non-null value of board option
  */
 newBoard({
-  height: 5,
-  width: 5,
+  height: 15,
+  width: 15,
   generator: Generators.recursiveBackTrack,
 });
 
