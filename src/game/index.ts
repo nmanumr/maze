@@ -1,5 +1,5 @@
 import {Size} from "../utils";
-import {Generator} from "../generators";
+import {MazeGenerator} from "../generators";
 import renderersManager, {Renderers} from "../renderers";
 import {Observable} from "rxjs";
 import {Keyboard} from "../browser/keyboard";
@@ -12,7 +12,7 @@ import {default as canvasConfetti} from "canvas-confetti";
 
 export interface GameOptions {
   size: Size;
-  generator: Generator;
+  generator: MazeGenerator;
   renderer: Renderers;
   interactive: boolean;
   showPlayer: boolean;

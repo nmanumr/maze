@@ -1,5 +1,5 @@
 import {Board} from "../board";
 
-export interface Generator {
+export interface MazeGenerator {
   generate(board: Board): Board;
 }

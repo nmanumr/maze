@@ -1,12 +1,12 @@
 import {Board, RectangularDirection} from '../board';
-import {Generator} from "./types";
-import {stringifyPosition} from "../utils";
-import {PathSet, PathSetGenerator} from "./_pathSetGenerator";
+import {MazeGenerator} from "./types";
+import {PathSetGenerator} from "./_pathSetGenerator";
+import {CellSet} from "../utils/cellSet";
 
 /**
  * https://weblog.jamisbuck.org/2011/1/3/maze-generation-kruskal-s-algorithm
  */
-export default class Kruskal extends PathSetGenerator implements Generator {
+export default class Kruskal extends PathSetGenerator implements MazeGenerator {
   generate(board: Board): Board {
     board = board.clone();
 
@@ -14,12 +14,10 @@ export default class Kruskal extends PathSetGenerator implements Generator {
     board.cells[0].removeWall(RectangularDirection.LEFT);
     board.cells[board.cells.length - 1].removeWall(RectangularDirection.RIGHT);
 
-    const pathSets: PathSet[] = [];
+    const pathSets: CellSet[] = [];
 
     for (let cell of board.cells) {
-      pathSets.push({
-        [stringifyPosition(cell.position)]: cell,
-      });
+      pathSets.push(new CellSet([cell]));
     }
 
     while (pathSets.length > 1) {

@@ -1,6 +1,6 @@
 import {Board, Cell, RectangularDirection} from '../board';
-import {Generator} from "./types";
-import {stringifyPosition} from "../utils";
+import {MazeGenerator} from "./types";
+import {CellSet} from "../utils/cellSet";
 
 /**
  * Depth first recursive backtrack maze generation algorithm
@@ -8,7 +8,7 @@ import {stringifyPosition} from "../utils";
  *
  * Generates long dead ends making the solution little difficult
  */
-export default class RecursiveBacktrack implements Generator {
+export default class RecursiveBacktrack implements MazeGenerator {
   generate(board: Board): Board {
     board = board.clone();
 
@@ -17,15 +17,15 @@ export default class RecursiveBacktrack implements Generator {
     board.cells[board.cells.length - 1].removeWall(RectangularDirection.RIGHT);
 
     // select a random cell and start from that cell
-    const visitedCells = new Set<string>();
+    const visitedCells = new CellSet();
     const randomCell = board.getRandomCell();
 
     this.visitCell(randomCell, visitedCells, board);
     return board;
   }
 
-  visitCell(cell: Cell, visitedCells: Set<string>, board: Board) {
-    visitedCells.add(stringifyPosition(cell.position));
+  visitCell(cell: Cell, visitedCells: CellSet, board: Board) {
+    visitedCells.add(cell);
     const neighbourCells = Array.from(board.getNeighbourCells(cell.position).values());
 
     while (neighbourCells.length !== 0) {
@@ -35,7 +35,7 @@ export default class RecursiveBacktrack implements Generator {
 
       // if random neighbour is not already visited remove wall between
       // random neighbour and current cell and recursively visit that neighbour
-      if (!visitedCells.has(stringifyPosition(randomCell.position))) {
+      if (!visitedCells.hasCell(randomCell)) {
         board.removeInterWall(cell.position, randomCell.position);
         this.visitCell(randomCell, visitedCells, board);
       }

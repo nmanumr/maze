@@ -1,10 +1,10 @@
 import {Board, RectangularDirection} from '../board';
-import {Generator} from "./types";
+import {MazeGenerator} from "./types";
 
 /**
  * http://weblog.jamisbuck.org/2011/2/1/maze-generation-binary-tree-algorithm
  */
-export default class BinaryTree implements Generator {
+export default class BinaryTree implements MazeGenerator {
   generate(board: Board): Board {
     board = board.clone();
 

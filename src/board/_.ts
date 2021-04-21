@@ -1,7 +1,7 @@
 import {BehaviorSubject, Observable} from "rxjs";
 import {Board} from "./board";
 import {concatMap, filter, share} from "rxjs/operators";
-import {Generator} from "../generators";
+import {MazeGenerator} from "../generators";
 import {Position} from "../utils";
 
 /*--------------
@@ -11,7 +11,7 @@ import {Position} from "../utils";
 export interface BoardOptions {
   width: number;
   height: number;
-  generator: Generator,
+  generator: MazeGenerator,
 }
 
 /*-------------------

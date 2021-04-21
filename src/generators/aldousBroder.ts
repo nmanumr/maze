@@ -1,11 +1,11 @@
 import {Board, RectangularDirection} from '../board';
-import {Generator} from "./types";
-import {stringifyPosition} from "../utils";
+import {MazeGenerator} from "./types";
+import {CellSet} from "../utils/cellSet";
 
 /**
  * https://weblog.jamisbuck.org/2011/1/17/maze-generation-aldous-broder-algorithm
  */
-export default class AldousBroder implements Generator {
+export default class AldousBroder implements MazeGenerator {
   generate(board: Board): Board {
     board = board.clone();
 
@@ -15,8 +15,8 @@ export default class AldousBroder implements Generator {
 
     // select a random cell and start from that cell
     let currentCell = board.getRandomCell();
-    const visitedCells = new Set<string>();
-    visitedCells.add(stringifyPosition(currentCell.position));
+    const visitedCells = new CellSet();
+    visitedCells.add(currentCell);
 
     let movingTowards;
 
@@ -24,15 +24,15 @@ export default class AldousBroder implements Generator {
       const cellNeighbours = Array.from(board.getNeighbourCells(currentCell.position).values());
 
       const unvisitedNeighbours = cellNeighbours.filter((cell) => {
-        return !visitedCells.has(stringifyPosition(cell.position));
+        return !visitedCells.hasCell(cell);
       })
 
       // If there are some unvisited neighbours choose any random neighbour and visit it
       if (unvisitedNeighbours.length > 0) {
         let randomCell = cellNeighbours[Math.round((cellNeighbours.length - 1) * Math.random())];
-        if (!visitedCells.has(stringifyPosition(randomCell.position))) {
+        if (!visitedCells.hasCell(randomCell)) {
           board.removeInterWall(randomCell.position, currentCell.position)
-          visitedCells.add(stringifyPosition(randomCell.position));
+          visitedCells.add(randomCell);
           movingTowards = null;
         }
 
@@ -44,7 +44,7 @@ export default class AldousBroder implements Generator {
 
         if (!movingTowards) {
           const unvisitedCells = board.cells.filter((cell) => {
-            return !visitedCells.has(stringifyPosition(cell.position));
+            return !visitedCells.hasCell(cell);
           });
 
           movingTowards = unvisitedCells[Math.round((unvisitedCells.length - 1) * Math.random())]
