@@ -4,7 +4,7 @@ import {stringifyPosition} from "../utils";
 import {PathSet, PathSetGenerator} from "./_pathSetGenerator";
 
 /**
- * https://weblog.jamisbuck.org/2010/12/29/maze-generation-eller-s-algorithm
+ * https://weblog.jamisbuck.org/2011/1/3/maze-generation-kruskal-s-algorithm
  */
 export default class Kruskal extends PathSetGenerator implements Generator {
   generate(board: Board): Board {

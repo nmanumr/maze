@@ -3,7 +3,7 @@ import {stringifyPosition} from "../utils";
 
 export type PathSet = Record<string, Cell>;
 
-export class PathSetGenerator {
+export abstract class PathSetGenerator {
   protected getSetFromCell(cell: Cell, pathSets: PathSet[]): PathSet | undefined {
     for (let set of pathSets) {
       if (set[stringifyPosition(cell.position)]) {

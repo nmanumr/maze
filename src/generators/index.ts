@@ -3,6 +3,7 @@ import AldousBroder from "./aldousBroder";
 import BinaryTree from "./binaryTree";
 import Eller from "./eller";
 import Kruskal from "./kruskal";
+import HuntAndKill from "./huntAndKill";
 
 export * from './types';
 
@@ -12,4 +13,5 @@ export const Generators = {
   BinaryTree: new BinaryTree(),
   Eller: new Eller(),
   Kruskal: new Kruskal(),
+  HuntAndKill: new HuntAndKill(),
 }
