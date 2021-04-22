@@ -1,7 +1,7 @@
 import {MazeGenerator} from "./types";
 import {Board, Cell, RectangularDirection} from "../board";
 import {CellSet} from "../utils/cellSet";
-import {getRandomFrom, getUnvisitedCell} from "./utils";
+import {getRandomFrom, getUnvisitedCell, randomWalkUntil} from "./utils";
 
 /**
  * Wilson's Maze Generation Algorithm
@@ -17,33 +17,34 @@ export class Wilson implements MazeGenerator {
     board.cells[0].removeWall(RectangularDirection.LEFT);
     board.cells[board.cells.length - 1].removeWall(RectangularDirection.RIGHT);
 
+    // mark a random cell a visited
     const visitedCells = new CellSet();
     visitedCells.add(board.getRandomCell());
 
+    // loop until not all the cells are visited
     while (visitedCells.size < board.size.height * board.size.width) {
+      // get a visited cell -- just a fun fact its not random its first unvisited cell ;)
       let randomCell = getUnvisitedCell(board, visitedCells);
-      let path: Cell[] = [randomCell];
 
-      while (!visitedCells.hasCell(randomCell)) {
-        // TODO: getNeighbourCells
-        const neighbourCells = Array.from(board.getNeighbourCells(randomCell.position).values());
-        randomCell = getRandomFrom(neighbourCells);
-
-        if (path.includes(randomCell)) {
-          path = path.slice(0, path.indexOf(randomCell));
-
+      // make random walk until not reached some visited cell
+      let path = randomWalkUntil(randomCell, board, (cell, path) => {
+        if (path.includes(cell)) {
+          const i = path.indexOf(cell);
+          path.splice(i, path.length);
         }
-        path.push(randomCell);
-      }
 
+        return !visitedCells.hasCell(cell);
+      });
+
+      // remove wall between cells of path
       for (let i = 1; i < path.length; i++) {
         board.removeInterWall(path[i - 1].position, path[i].position);
       }
 
+      // mark all the path cells as visited
       visitedCells.addAll(path);
     }
 
     return board;
   }
-
 }

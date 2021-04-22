@@ -28,7 +28,7 @@ mountGame({keyboard$, swipe$, boardEl});
 newBoard({
   height: 15,
   width: 15,
-  generator: Generators.RecursiveBackTrack,
+  generator: Generators.HuntAndKill,
 });
 
 

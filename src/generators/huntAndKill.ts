@@ -2,7 +2,7 @@ import {Board, Cell, RectangularDirection} from '../board';
 import {MazeGenerator} from "./types";
 import {stringifyPosition} from "../utils";
 import {PathSetGenerator} from "./_pathSetGenerator";
-import {getUnvisitedCell} from "./utils";
+import {getUnvisitedCell, randomWalkUntil} from "./utils";
 import {CellSet} from "../utils/cellSet";
 
 /**
@@ -19,38 +19,34 @@ export default class HuntAndKill extends PathSetGenerator implements MazeGenerat
     // select a random cell and start from that cell
     const visitedCells = new CellSet();
     let cell = getUnvisitedCell(board, visitedCells);
+    visitedCells.add(cell);
 
     while (cell) {
       const neighbourCells = Array.from(board.getNeighbourCells(cell.position).values());
       for (let neighbourCell of neighbourCells) {
-        if (visitedCells.has(stringifyPosition(neighbourCell.position))) {
+        if (visitedCells.hasCell(neighbourCell)) {
           board.removeInterWall(cell.position, neighbourCell.position);
+
+          let path = randomWalkUntil(cell, board, (cell, path) => {
+            visitedCells.add(cell);
+            let neighbourCells = Array.from(board.getNeighbourCells(cell.position).values());
+            return neighbourCells.some((cell) => {
+              return !visitedCells.hasCell(cell);
+            })
+          }, visitedCells);
+
+          // remove wall between cells of path
+          for (let i = 1; i < path.length; i++) {
+            board.removeInterWall(path[i - 1].position, path[i].position);
+          }
+
           break;
         }
       }
 
-      this.randomWalk(cell, board, visitedCells);
       cell = getUnvisitedCell(board, visitedCells);
     }
 
     return board;
-  }
-
-  private randomWalk(cell: Cell, board: Board, visitedCells: CellSet) {
-    visitedCells.add(cell);
-
-    let neighbourCells = Array.from(board.getNeighbourCells(cell.position).values());
-    neighbourCells = neighbourCells.filter((cell) => {
-      return !visitedCells.hasCell(cell);
-    });
-    if (neighbourCells.length === 0) return;
-
-    const randomCell = neighbourCells[Math.round(Math.random() * (neighbourCells.length - 1))];
-    if (!visitedCells.hasCell(randomCell)) {
-      board.removeInterWall(cell.position, randomCell.position);
-      visitedCells.add(randomCell);
-
-      this.randomWalk(randomCell, board, visitedCells);
-    }
   }
 }
