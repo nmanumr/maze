@@ -26,9 +26,9 @@ mountGame({keyboard$, swipe$, boardEl});
  * some non-null value of board option
  */
 newBoard({
-  height: 15,
-  width: 15,
-  generator: Generators.HuntAndKill,
+  height: 6,
+  width: 6,
+  generator: Generators.Wilson,
 });
 
 

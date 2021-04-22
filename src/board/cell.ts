@@ -1,10 +1,10 @@
 import {Position} from "../utils";
 
 export const enum RectangularDirection {
-  LEFT = 'left',
-  RIGHT = 'right',
-  UP = 'up',
-  DOWN = 'down',
+  LEFT,
+  RIGHT,
+  UP,
+  DOWN,
 }
 
 export const OpposingRectangularDirection = {

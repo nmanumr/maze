@@ -78,13 +78,13 @@ export function moveInDirection(dir: RectangularDirection, board: Board) {
 
   // continue to moving player in the direction until cell is a passage
   do {
-    if (dir === 'right' && x < (board.size.width - 1)) {
+    if (dir === RectangularDirection.RIGHT && x < (board.size.width - 1)) {
       x++;
-    } else if (dir === 'left' && x > 0) {
+    } else if (dir === RectangularDirection.LEFT && x > 0) {
       x--;
-    } else if (dir === 'up' && y > 0) {
+    } else if (dir === RectangularDirection.UP && y > 0) {
       y--;
-    } else if (dir === 'down' && y < (board.size.height - 1)) {
+    } else if (dir === RectangularDirection.DOWN && y < (board.size.height - 1)) {
       y++;
     }
 
