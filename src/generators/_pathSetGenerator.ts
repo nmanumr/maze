@@ -1,8 +1,5 @@
 import {Cell} from "../board";
 import {CellSet} from "../utils/cellSet";
-import set = Reflect.set;
-
-export type PathSet = Record<string, Cell>;
 
 export abstract class PathSetGenerator {
   protected getSetFromCell(cell: Cell, pathSets: CellSet[]): CellSet | undefined {

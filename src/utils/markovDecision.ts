@@ -1,10 +1,10 @@
-export interface Environment<T> {
+export interface Environment<Action> {
   /** Number of allowed actions at given state */
-  allowedActions(state: number): T[]
+  allowedActions(state: number): Action[]
 
-  nextState(state: number, action: T): number;
+  nextState(state: number, action: Action): number;
 
-  reward(state: number, action: T, nextState: number): number;
+  reward(state: number, action: Action, nextState: number): number;
 
   /** Number of total states in the environment */
   stateSize: number;
@@ -24,7 +24,7 @@ function sampleWeighted(probabilities: number[]): number {
   }
 }
 
-export class MarkovDecision<T extends number> {
+export class MarkovDecision<Action extends number> {
   private ValueTable: Float32Array;
   private PolicyTable: Float32Array;
 
@@ -32,7 +32,7 @@ export class MarkovDecision<T extends number> {
    * @param env the environment
    * @param gamma the discount factor
    */
-  constructor(private env: Environment<T>, private gamma = 0.75) {
+  constructor(private env: Environment<Action>, private gamma = 0.75) {
     this.ValueTable = new Float32Array(env.stateSize);
 
     // stores probability of each action on each state
@@ -46,7 +46,7 @@ export class MarkovDecision<T extends number> {
     }
   }
 
-  act(state: number): T {
+  act(state: number): Action {
     const allowedActions = this.env.allowedActions(state);
     let ps = [];
     for (let action of allowedActions) {
