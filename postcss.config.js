@@ -1,6 +1,6 @@
 module.exports = ({ env }) => ({
   plugins: {
-    '@tailwindcss/jit': {},
+    tailwindcss: {},
     autoprefixer: {},
     cssnano: env === "production" ? { preset: "default", discardComments: { removeAll: true } } : false
   },

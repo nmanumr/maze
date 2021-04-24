@@ -3,6 +3,10 @@
 @tailwind utilities;
 
 
+body {
+    font-family: 'Nunito', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+}
+
 :root {
     /* just dummy value actual value is set from renderer class */
     --cell-size: 0;
