@@ -12,7 +12,7 @@
  */
 
 export interface BaseBoard {
-  board: Uint8Array;
+  cells: Uint8Array;
 }
 
 /**
@@ -20,7 +20,7 @@ export interface BaseBoard {
  */
 export function genericBoard(size: number): BaseBoard {
   return {
-    board: new Uint8Array(size)
+    cells: new Uint8Array(size)
   };
 }
 

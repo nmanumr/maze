@@ -1,4 +1,4 @@
-export function shuffle(array: any[]) {
+export function shuffle<T>(array: T[]): T[] {
   let currentIndex = array.length, temporaryValue, randomIndex;
 
   // While there remain elements to shuffle...
@@ -15,4 +15,8 @@ export function shuffle(array: any[]) {
   }
 
   return array;
+}
+
+export function getRandomFrom<T>(list: T[]): T {
+  return list[Math.round(Math.random() * (list.length - 1))];
 }

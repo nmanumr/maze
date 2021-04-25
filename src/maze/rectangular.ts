@@ -36,7 +36,7 @@ export interface RectangularBoard extends BaseBoard {
  */
 export function rectangularBoard(size: Size): RectangularBoard {
   return {
-    board: new Uint8Array(size.width * size.height),
+    cells: new Uint8Array(size.width * size.height),
     size,
   }
 }
@@ -44,8 +44,8 @@ export function rectangularBoard(size: Size): RectangularBoard {
 /**
  * Casts base board to RectangularBoard
  */
-export function rectangularFromBaseBoard({board}: BaseBoard, size: Size): RectangularBoard {
-  return {board, size}
+export function rectangularFromBaseBoard({cells}: BaseBoard, size: Size): RectangularBoard {
+  return {cells: cells, size}
 }
 
 /*-------------------------
@@ -55,14 +55,14 @@ export function rectangularFromBaseBoard({board}: BaseBoard, size: Size): Rectan
 /**
  * Linear index from position
  */
-export function toIndex(position: Position, {size}: Optional<RectangularBoard, 'board'>) {
+export function toIndex(position: Position, {size}: Optional<RectangularBoard, 'cells'>) {
   return position.y * size.width + position.x;
 }
 
 /**
  * Position from linear index
  */
-export function toPosition(index: number, {size}: Optional<RectangularBoard, 'board'>) {
+export function toPosition(index: number, {size}: Optional<RectangularBoard, 'cells'>) {
   return {
     x: index % size.height,
     y: Math.floor(index / size.height),
@@ -76,15 +76,15 @@ export function toPosition(index: number, {size}: Optional<RectangularBoard, 'bo
 /**
  * get cell at given position
  */
-export function getCell(position: Position, {board, size}: RectangularBoard): number {
-  return board[toIndex(position, {size})];
+export function getCell(position: Position, {cells, size}: RectangularBoard): number {
+  return cells[toIndex(position, {size})];
 }
 
 /**
  * set cell at given position
  */
-export function setCell(position: Position, value: number, {board, size}: RectangularBoard) {
-  return board[toIndex(position, {size})] = value;
+export function setCell(position: Position, value: number, {cells, size}: RectangularBoard) {
+  return cells[toIndex(position, {size})] = value;
 }
 
 /*-------------------------
@@ -131,30 +131,30 @@ export function getRelativePosition({x, y}: Position, direction: Direction) {
 /**
  * Get neighbour cells of the given position
  */
-export function getNeighbourCells(position: Position, {board, size}: RectangularBoard, visitableOnly = false) {
+export function getNeighbourCells(position: Position, {cells, size}: RectangularBoard, visitableOnly = false) {
   let neighbours = new Map<Direction, number>(),
     index = toIndex(position, {size});
 
   if (index >= size.width) {
-    const cell = board[index - size.width];
+    const cell = cells[index - size.width];
     if (isEnabled(cell))
       neighbours.set(Direction.TOP, cell);
   }
 
   if ((index + 1) % size.width != 0) {
-    const cell = board[index + 1];
+    const cell = cells[index + 1];
     if (isEnabled(cell))
       neighbours.set(Direction.RIGHT, cell);
   }
 
-  if (index < board.length - size.width) {
-    const cell = board[index + size.width];
+  if (index < cells.length - size.width) {
+    const cell = cells[index + size.width];
     if (isEnabled(cell))
       neighbours.set(Direction.BOTTOM, cell);
   }
 
   if (index % size.width != 0) {
-    const cell = board[index - 1];
+    const cell = cells[index - 1];
     if (isEnabled(cell))
       neighbours.set(Direction.LEFT, cell);
   }
@@ -162,7 +162,7 @@ export function getNeighbourCells(position: Position, {board, size}: Rectangular
   if (visitableOnly) {
     const visitableNeighbours = Array.from(neighbours.entries())
       .filter(([dir]) => {
-        return !hasInterWall(getRelativePosition(position, dir), position, {board, size});
+        return !hasInterWall(getRelativePosition(position, dir), position, {cells: cells, size});
       });
 
     neighbours = new Map(visitableNeighbours);
@@ -174,9 +174,9 @@ export function getNeighbourCells(position: Position, {board, size}: Rectangular
 /**
  * Returns a neighbour cell in relative direction of given position
  */
-export function getNeighbourCell(position: Position, direction: Direction, {board, size}: RectangularBoard) {
+export function getNeighbourCell(position: Position, direction: Direction, {cells, size}: RectangularBoard) {
   const newPosition = getRelativePosition(position, direction);
-  return getCell(newPosition, {board, size});
+  return getCell(newPosition, {cells: cells, size});
 }
 
 /**
@@ -184,7 +184,7 @@ export function getNeighbourCell(position: Position, direction: Direction, {boar
  *
  * if visitableOnly is false then it only check nif neighbour is enabled or not
  */
-export function getAllowedDirection({x, y}: Position, {board, size}: RectangularBoard, visitableOnly = true) {
+export function getAllowedDirection({x, y}: Position, {cells, size}: RectangularBoard, visitableOnly = true) {
   let directions = [];
 
   if (y > 0) directions.push(Direction.TOP);
@@ -194,8 +194,8 @@ export function getAllowedDirection({x, y}: Position, {board, size}: Rectangular
 
   directions.filter((dir) => {
     const newPos = getRelativePosition({x, y}, dir);
-    const cell = board[toIndex(newPos, {size})];
-    if (visitableOnly && hasInterWall(newPos, {x, y}, {board, size})) {
+    const cell = cells[toIndex(newPos, {size})];
+    if (visitableOnly && hasInterWall(newPos, {x, y}, {cells: cells, size})) {
       return false;
     }
     return isEnabled(cell);
@@ -210,46 +210,46 @@ export function getAllowedDirection({x, y}: Position, {board, size}: Rectangular
 
 function _setInterWall(
   pos1: Position, pos2: Position,
-  {board, size}: RectangularBoard,
+  {cells, size}: RectangularBoard,
   fn: (cell: number, dir: Direction) => number
 ) {
-  const cell1 = getCell(pos1, {board, size});
-  const cell2 = getCell(pos1, {board, size});
+  const cell1 = getCell(pos1, {cells: cells, size});
+  const cell2 = getCell(pos1, {cells: cells, size});
 
   const cell1Dir = getRelativeDirection(pos1, pos2);
   const cell2Dir = getOpposingDirection(cell1Dir);
 
-  isEnabled(cell1) && setCell(pos1, fn(cell1, cell1Dir), {board, size});
-  isEnabled(cell2) && setCell(pos2, fn(cell2, cell2Dir), {board, size});
+  isEnabled(cell1) && setCell(pos1, fn(cell1, cell1Dir), {cells: cells, size});
+  isEnabled(cell2) && setCell(pos2, fn(cell2, cell2Dir), {cells: cells, size});
 }
 
 /**
  * Remove wall between the given two cell positions
  */
-export function removeInterWall(pos1: Position, pos2: Position, {board, size}: RectangularBoard): void {
-  _setInterWall(pos1, pos2, {board, size}, (cell, dir) => cell & ~dir);
+export function removeInterWall(pos1: Position, pos2: Position, {cells, size}: RectangularBoard): void {
+  _setInterWall(pos1, pos2, {cells: cells, size}, (cell, dir) => cell & ~dir);
 }
 
 /**
  * Set wall between the given two cell positions
  */
-export function setInterWall(pos1: Position, pos2: Position, {board, size}: RectangularBoard): void {
-  _setInterWall(pos1, pos2, {board, size}, (cell, dir) => cell | dir);
+export function setInterWall(pos1: Position, pos2: Position, {cells, size}: RectangularBoard): void {
+  _setInterWall(pos1, pos2, {cells: cells, size}, (cell, dir) => cell | dir);
 }
 
 /**
  * Set wall between the given two cell positions
  */
-export function hasInterWall(pos1: Position, pos2: Position, {board, size}: RectangularBoard): boolean {
+export function hasInterWall(pos1: Position, pos2: Position, {cells, size}: RectangularBoard): boolean {
   const cell1Dir = getRelativeDirection(pos1, pos2);
   const cell2Dir = getOpposingDirection(cell1Dir);
 
-  return hasWall(pos1, cell1Dir, {board, size}) && hasWall(pos2, cell2Dir, {board, size});
+  return hasWall(pos1, cell1Dir, {cells: cells, size}) && hasWall(pos2, cell2Dir, {cells: cells, size});
 }
 
 /**
  * has cell at given position have wall in the given direction
  */
-export function hasWall(position: Position, direction: Direction, {board, size}: RectangularBoard) {
-  return hasCellWall(getCell(position, {board, size}), Math.log2(direction));
+export function hasWall(position: Position, direction: Direction, {cells, size}: RectangularBoard) {
+  return hasCellWall(getCell(position, {cells: cells, size}), Math.log2(direction));
 }

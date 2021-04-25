@@ -31,12 +31,12 @@ export interface MarkovModel<Action extends number> {
  *------------------------- */
 
 /**
- * Makes a random
+ * Performs a random walk in the given environment using Markov Decision Process
  * @param position The start index
  * @param env
  * @param until Continues unit this function doesn't resolves to false
  */
-export function randomWalkUntil<Board extends BaseBoard, Action extends number>(
+export function randomWalkUntil<Action extends number>(
   position: number,
   env: Environment<Action>,
   until: (position: number, path: number[]) => boolean,
@@ -58,6 +58,11 @@ export function randomWalkUntil<Board extends BaseBoard, Action extends number>(
 
 /*-------------------------
  * Markov Decision Process
+ *
+ * NOTE: I never tested the efficiency of this algorithm individually
+ * but, I have seen significant improvement in time taken by random walks
+ * so hopefully its working well but there could be a lot of ways for improvement
+ *
  * Adopted from: https://github.com/karpathy/reinforcejs/blob/master/lib/rl.js#L634
  * More at: https://en.wikipedia.org/wiki/Markov_decision_process
  *------------------------- */
