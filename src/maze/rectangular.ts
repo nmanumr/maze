@@ -1,5 +1,4 @@
 import {BaseBoard, isEnabled, hasCellWall} from "./base";
-import {Optional} from 'utility-types';
 
 /*--------------
  * Types
@@ -26,6 +25,7 @@ export interface RectangularBoard extends BaseBoard {
   size: Size;
 }
 
+export type PartialExcept<T extends object, K extends keyof T = keyof T> = Pick<T, K> & Partial<T>;
 
 /*-------------------------
  * Constructor Functions
@@ -55,14 +55,14 @@ export function rectangularFromBaseBoard({cells}: BaseBoard, size: Size): Rectan
 /**
  * Linear index from position
  */
-export function toIndex(position: Position, {size}: Optional<RectangularBoard, 'cells'>) {
+export function toIndex(position: Position, {size}: PartialExcept<RectangularBoard, 'size'>) {
   return position.y * size.width + position.x;
 }
 
 /**
  * Position from linear index
  */
-export function toPosition(index: number, {size}: Optional<RectangularBoard, 'cells'>) {
+export function toPosition(index: number, {size}: PartialExcept<RectangularBoard, 'size'>) {
   return {
     x: index % size.height,
     y: Math.floor(index / size.height),
@@ -104,10 +104,10 @@ export function getOpposingDirection(direction: Direction): Direction {
  * Get relative direction between two positions
  */
 export function getRelativeDirection(pos1: Position, pos2: Position): Direction {
-  if (pos1.y < pos2.y) return Direction.TOP;
-  if (pos1.x > pos2.x) return Direction.RIGHT;
-  if (pos1.y > pos2.y) return Direction.BOTTOM;
-  if (pos1.x < pos2.x) return Direction.LEFT;
+  if (pos1.y > pos2.y) return Direction.TOP;
+  if (pos1.x < pos2.x) return Direction.RIGHT;
+  if (pos1.y < pos2.y) return Direction.BOTTOM;
+  if (pos1.x > pos2.x) return Direction.LEFT;
 
   throw `'${pos1}' and '${pos2}' are not neighbours`;
 }
@@ -204,37 +204,57 @@ export function getAllowedDirection({x, y}: Position, {cells, size}: Rectangular
   return directions;
 }
 
+/**
+ * return array of rows of cells
+ */
+export function getRows({cells, size}: RectangularBoard): number[][] {
+  return cells
+    .map((_, i) => i)
+    .reduce((acc, item, index) => {
+      if (index % size.width === 0) {
+        acc.push([]);
+      }
+
+      acc[acc.length - 1].push(item);
+      return acc;
+    }, []);
+}
+
+export function getNextRowNeighbours(index: number, {size}: RectangularBoard): number[] {
+  return [index + size.width]
+}
+
 /*-------------------------
  * Cell Wall Utils
  *------------------------- */
 
 function _setInterWall(
-  pos1: Position, pos2: Position,
+  index1: number, index2: number,
   {cells, size}: RectangularBoard,
   fn: (cell: number, dir: Direction) => number
-) {
-  const cell1 = getCell(pos1, {cells: cells, size});
-  const cell2 = getCell(pos1, {cells: cells, size});
-
+): RectangularBoard {
+  cells = cells.slice(0);
+  const [pos1, pos2] = [index1, index2].map((i) => toPosition(i, {size}));
   const cell1Dir = getRelativeDirection(pos1, pos2);
   const cell2Dir = getOpposingDirection(cell1Dir);
 
-  isEnabled(cell1) && setCell(pos1, fn(cell1, cell1Dir), {cells: cells, size});
-  isEnabled(cell2) && setCell(pos2, fn(cell2, cell2Dir), {cells: cells, size});
+  isEnabled(cells[index1]) && setCell(pos1, fn(cells[index1], cell1Dir), {cells: cells, size});
+  isEnabled(cells[index2]) && setCell(pos2, fn(cells[index2], cell2Dir), {cells: cells, size});
+  return {cells, size};
 }
 
 /**
  * Remove wall between the given two cell positions
  */
-export function removeInterWall(pos1: Position, pos2: Position, {cells, size}: RectangularBoard): void {
-  _setInterWall(pos1, pos2, {cells: cells, size}, (cell, dir) => cell & ~dir);
+export function removeInterWall(pos1: number, pos2: number, {cells, size}: RectangularBoard): RectangularBoard {
+  return _setInterWall(pos1, pos2, {cells: cells, size}, (cell, dir) => cell | dir);
 }
 
 /**
  * Set wall between the given two cell positions
  */
-export function setInterWall(pos1: Position, pos2: Position, {cells, size}: RectangularBoard): void {
-  _setInterWall(pos1, pos2, {cells: cells, size}, (cell, dir) => cell | dir);
+export function setInterWall(pos1: number, pos2: number, {cells, size}: RectangularBoard): RectangularBoard {
+  return _setInterWall(pos1, pos2, {cells: cells, size}, (cell, dir) => cell & ~dir);
 }
 
 /**

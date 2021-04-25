@@ -28,7 +28,7 @@ export function genericBoard(size: number): BaseBoard {
  * Checks if the given cell is enabled or not
  */
 export function isEnabled(cell: number): boolean {
-  return Boolean(cell & 1 << 7);
+  return (cell & 1 << 7) === 0;
 }
 
 /**
@@ -36,7 +36,7 @@ export function isEnabled(cell: number): boolean {
  * given cell with all wall removed
  */
 export function removeAllWall(cell: number): number {
-  return !isEnabled(cell) ? cell : cell & 0b0000_0000;
+  return !isEnabled(cell) ? cell : cell | 0b0111_1111;
 }
 
 /**
@@ -44,7 +44,7 @@ export function removeAllWall(cell: number): number {
  * given cell with all wall removed
  */
 export function setAllWalls(cell: number): number {
-  return !isEnabled(cell) ? cell : cell | 0b0111_1111;
+  return !isEnabled(cell) ? cell : cell & 0b0000_0000;
 }
 
 /**
@@ -53,7 +53,7 @@ export function setAllWalls(cell: number): number {
  * @param wall index of specific wall
  */
 export function hasCellWall(cell: number, wall: number): boolean {
-  return !isEnabled(cell) || Boolean(cell & 1 << wall);
+  return !isEnabled(cell) || (cell & 1 << wall) === 0;
 }
 
 /**
@@ -69,5 +69,5 @@ export function setWall(cell: number, wall: number): number {
  * given cell with the specified wall removed
  */
 export function removeWall(cell: number, wall: number): number {
-  return !isEnabled(cell) ? cell : cell | (1 << wall);
+  return !isEnabled(cell) ? cell : cell & ~(1 << wall);
 }

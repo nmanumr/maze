@@ -12,7 +12,7 @@ interface BoardFunctions<Board extends BaseBoard> {
 }
 
 /**
- * Generates maze using Eller's  maze generation Algorithm
+ * Generates maze using Eller's maze generation Algorithm
  *
  * Ref: https://weblog.jamisbuck.org/2010/12/29/maze-generation-eller-s-algorithm
  */
@@ -26,11 +26,11 @@ export function generate<Board extends BaseBoard>(board: Board, fns: BoardFuncti
   }
 
   for (let row of rows.slice(0, -1)) {
-    board = visitRow(row, false, board, pathSets, fns);
-    board = visitNextRow(row, board, pathSets, fns);
+    [board, pathSets] = visitRow(row, false, board, pathSets, fns);
+    [board, pathSets] = visitNextRow(row, board, pathSets, fns);
   }
 
-  board = visitRow(rows[0], true, board, pathSets, fns);
+  [board, pathSets] = visitRow(rows[rows.length - 1], true, board, pathSets, fns);
   return board;
 }
 
@@ -40,7 +40,7 @@ function visitRow<Board extends BaseBoard>(
   board: Board,
   pathSets: ItemSets<number>,
   fns: BoardFunctions<Board>
-): Board {
+): [Board, ItemSets<number>] {
   for (let i = 1; i < row.length; i++) {
     if (isFromSameSet(row[i - 1], row[i], pathSets)) {
       continue;
@@ -56,7 +56,7 @@ function visitRow<Board extends BaseBoard>(
     }
   }
 
-  return board;
+  return [board, pathSets];
 }
 
 function visitNextRow<Board extends BaseBoard>(
@@ -64,7 +64,7 @@ function visitNextRow<Board extends BaseBoard>(
   board: Board,
   pathSets: ItemSets<number>,
   fns: BoardFunctions<Board>
-): Board {
+): [Board, ItemSets<number>] {
   for (let set of pathSets) {
     let rowCells = Array.from(set).filter((index) => row.includes(index));
 
@@ -80,5 +80,5 @@ function visitNextRow<Board extends BaseBoard>(
     }
   }
 
-  return board;
+  return [board, pathSets];
 }
