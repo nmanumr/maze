@@ -1,4 +1,5 @@
-import {CircularBoard, getRows, Position as CircularPosition} from "../boards/circular";
+import {CircularBoard, Direction, getRows} from "../boards/circular";
+import {hasCellWall} from "../base";
 
 interface RendererOptions {
   cellSize: number;
@@ -23,7 +24,7 @@ export function render(board: CircularBoard, options: Partial<RendererOptions> =
 
   for (let r = innerRadius; r < rows.length + innerRadius; r++) {
     for (let i = 0; i < rows[r - innerRadius].length; i++) {
-      // const cellIndex = rows[r][i];
+      const cell = board.cells[rows[r - innerRadius][i]];
 
       const cellArc = 2 * Math.PI / rows[r - innerRadius].length;
       const innerArcRadius = r * options.cellSize + radiusOffset;
@@ -37,14 +38,15 @@ export function render(board: CircularBoard, options: Partial<RendererOptions> =
       const [[xo1, yo1], [xo2, yo2]] = [theta1, theta2]
         .map(t => [Math.cos(t), Math.sin(t)].map((i) => center + outerArcRadius * i));
 
-      // inner arc (bottom wall)
-      path += `M${xi1},${yi1}A${innerArcRadius},${innerArcRadius},0,0,1,${xi2},${yi2}`;
-
-      // cells left wall
-      path += `M${xi1},${yi1}L${xo1},${yo1}`;
-
-      // cells right wall
-      path += `M${xi2},${yi2}L${xo2},${yo2}`;
+      if ((cell & Direction.BOTTOM) === 0) {
+        path += `M${xi1},${yi1}A${innerArcRadius},${innerArcRadius},0,0,1,${xi2},${yi2}`;
+      }
+      if ((cell & Direction.LEFT) === 0) {
+        path += `M${xi1},${yi1}L${xo1},${yo1}`;
+      }
+      if ((cell & Direction.RIGHT) === 0) {
+        path += `M${xi2},${yi2}L${xo2},${yo2}`;
+      }
 
       if (r === (rows.length + innerRadius) - 1) {
         path += `M${xo1},${yo1}A${outerArcRadius},${outerArcRadius},0,0,1,${xo2},${yo2}`

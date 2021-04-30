@@ -190,7 +190,7 @@ export function removeInterWall(index1: number, index2: number, board: CircularB
     index1, index2, board,
     getOpposingDirection,
     getRelativeDirection,
-    (cell, dir) => cell
+    (cell, dir) => cell | dir
   )
 }
 
