@@ -185,7 +185,7 @@ export function getRows({size}: CircularBoard): number[][] {
 /**
  * Remove wall between the given two cell Indexes
  */
-function removeInterWall(index1: number, index2: number, board: CircularBoard): CircularBoard {
+export function removeInterWall(index1: number, index2: number, board: CircularBoard): CircularBoard {
   return setInterWallValue<CircularBoard, Direction>(
     index1, index2, board,
     getOpposingDirection,
@@ -194,4 +194,25 @@ function removeInterWall(index1: number, index2: number, board: CircularBoard): 
   )
 }
 
+/**
+ * Get neighbours of current cell in next row
+ */
+export function getNextRowNeighbours(index: number, {size}: CircularBoard): number[] {
+  const nodeCount = getRingNodeCount(size.radius).slice(size.innerRadius);
+  const nodeCountSum = nodeCount
+    .reduce((acc, v) => {
+      acc.push(acc[acc.length - 1] + v);
+      return acc;
+    }, [0]);
 
+  const r = nodeCountSum.findIndex((val) => val > index) - 1;
+  const t = index - nodeCountSum[r];
+
+  if (nodeCount[r] < nodeCount[r+1]) {
+    const cellIndex = toIndex({r: r + 1, t: t * 2}, {size});
+    return [cellIndex, cellIndex + 1];
+  }
+
+  const cellIndex = toIndex({r: r + 1, t}, {size});
+  return [cellIndex];
+}
