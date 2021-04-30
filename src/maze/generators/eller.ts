@@ -2,6 +2,10 @@ import {BaseBoard} from "../base";
 import {getItemSet, isFromSameSet, ItemSets, joinItemSets} from "./_pathSet";
 import {getRandomFrom, shuffle} from "../../utils";
 
+/*--------------
+ * Types
+ *-------------- */
+
 interface BoardFunctions<Board extends BaseBoard> {
   /** returns array of set of cell indexes in a row */
   getRows(board: Board): number[][];
@@ -10,6 +14,10 @@ interface BoardFunctions<Board extends BaseBoard> {
   /** get cell neighbour from next row */
   getNextRowNeighbours(index: number, board: Board): number[];
 }
+
+/*---------------
+ * Main function
+ *--------------- */
 
 /**
  * Generates maze using Eller's maze generation Algorithm
@@ -34,6 +42,13 @@ export function generate<Board extends BaseBoard>(board: Board, fns: BoardFuncti
   return board;
 }
 
+/*------------------
+ * Helper functions
+ *------------------ */
+
+/**
+ * Visit row cells and randomly merge them
+ */
 function visitRow<Board extends BaseBoard>(
   row: number[],
   mergeAll: boolean,
@@ -59,6 +74,7 @@ function visitRow<Board extends BaseBoard>(
   return [board, pathSets];
 }
 
+/** open passages between the cells of current row and the next row */
 function visitNextRow<Board extends BaseBoard>(
   row: number[],
   board: Board,

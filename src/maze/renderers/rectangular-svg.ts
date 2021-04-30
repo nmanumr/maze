@@ -1,4 +1,4 @@
-import {Direction, RectangularBoard, toPosition} from "../rectangular";
+import {Direction, RectangularBoard, toPosition} from "../boards/rectangular";
 
 interface RendererOptions {
   cellSize: number;

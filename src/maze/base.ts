@@ -71,3 +71,35 @@ export function setWall(cell: number, wall: number): number {
 export function removeWall(cell: number, wall: number): number {
   return !isEnabled(cell) ? cell : cell & ~(1 << wall);
 }
+
+export function hasInterWall<Board extends BaseBoard, Dir extends number>(
+  index1: number, index2: number,
+  board: Board,
+  relativeDirectionFn: (index1: number, index2: number, board: Board) => Dir,
+  opposingWallFn: (dir: Dir) => Dir,
+): boolean {
+  const cell1Dir = relativeDirectionFn(index1, index2, board);
+  const cell2Dir = opposingWallFn(cell1Dir);
+
+  return hasCellWall(board.cells[index1], cell1Dir) && hasCellWall(board.cells[index2], cell2Dir);
+}
+
+/**
+ * Set cell wall values between given to cells
+ */
+export function setInterWallValue<Board extends BaseBoard, Dir extends number>(
+  index1: number, index2: number,
+  board: Board,
+  opposingWallFn: (dir: Dir) => Dir,
+  relativeDirectionFn: (index1: number, index2: number, board: Board) => Dir,
+  cellValueFn: (cell: number, dir: Dir) => number,
+): Board {
+  let cells = board.cells.slice(0);
+
+  const cell1Dir = relativeDirectionFn(index1, index2, board);
+  const cell2Dir = opposingWallFn(cell1Dir);
+
+  if (isEnabled(cells[index1])) cells[index1] = cellValueFn(cells[index1], cell1Dir);
+  if (isEnabled(cells[index2])) cells[index2] = cellValueFn(cells[index2], cell2Dir);
+  return {...board, cells};
+}
