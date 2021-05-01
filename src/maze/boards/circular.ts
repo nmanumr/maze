@@ -2,7 +2,7 @@
  * Types
  *-------------- */
 
-import {BaseBoard, isEnabled, setInterWallValue} from "../base";
+import {BaseBoard, setInterWallValue} from "../base";
 import {PartialExcept} from "../types";
 
 // default top direction is clock wise
@@ -107,14 +107,14 @@ export function getRelativeDirection(index1: number, index2: number, {size}: Par
   const pos1 = toPosition(index1, {size});
   const pos2 = toPosition(index2, {size});
 
-  if (pos1.r + 1 === pos2.r) return Direction.BOTTOM;
+  if (pos1.r - 1 === pos2.r) return Direction.BOTTOM;
   if (pos1.r === pos2.r && pos1.t + 1 === pos2.t) return Direction.RIGHT;
   if (pos1.r === pos2.r && pos1.t - 1 === pos2.t) return Direction.LEFT;
 
   // Here is a trick to check if pos2 is in clock-wise or counter clock-wise top direction
   // I just observed that clockwise top cells always have even index
-  if (pos1.r - 1 === pos2.r && index1 % 2 === 0) return Direction.TOP_CW;
-  if (pos1.r - 1 === pos2.r && index1 % 2 === 1) return Direction.TOP_CCW;
+  if (pos1.r + 1 === pos2.r && index1 % 2 === 0) return Direction.TOP_CW;
+  if (pos1.r + 1 === pos2.r && index1 % 2 === 1) return Direction.TOP_CCW;
 
   throw `'${pos1}' and '${pos2}' are not neighbours`;
 }
@@ -208,7 +208,7 @@ export function getNextRowNeighbours(index: number, {size}: CircularBoard): numb
   const r = nodeCountSum.findIndex((val) => val > index) - 1;
   const t = index - nodeCountSum[r];
 
-  if (nodeCount[r] < nodeCount[r+1]) {
+  if (nodeCount[r] < nodeCount[r + 1]) {
     const cellIndex = toIndex({r: r + 1, t: t * 2}, {size});
     return [cellIndex, cellIndex + 1];
   }
